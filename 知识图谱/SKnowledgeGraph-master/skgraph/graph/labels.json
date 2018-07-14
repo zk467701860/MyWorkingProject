@@ -1,0 +1,370 @@
+{
+  "labels": [
+    {
+      "name": "wikidata",
+      "description": "knowledge from WikiData or Wikipedia",
+      "priority": 40,
+      "public name": "Background Knowledge",
+      "type": "knowledge source",
+      "is public": true
+    },
+    {
+      "name": "Android SDK",
+      "description": "Android SDK Version",
+      "priority": 2,
+      "public name": "Android SDK",
+      "type": "knowledge source",
+      "is public": false
+    },
+    {
+      "name": "Android library",
+      "description": "Android SDK Version",
+      "priority": 2,
+      "public name": "Android library",
+      "type": "category",
+      "is public": false
+    },
+    {
+      "name": "api",
+      "description": "represent a API in library, including package, class, method, field, etc",
+      "priority": 2,
+      "public name": "API",
+      "type": "category",
+      "is public": false
+    },
+    {
+      "name": "awesome category",
+      "description": "represent the functionality category of a library, extract from the subtitle of awesome list",
+      "priority": 2,
+      "public name": "Functionality Category",
+      "type": "knowledge source",
+      "is public": true
+    },
+    {
+      "name": "awesome item",
+      "description": "represent a library with specific function",
+      "priority": 2,
+      "public name": "Library",
+      "type": "knowledge source",
+      "is public": true
+    },
+    {
+      "name": "awesome list",
+      "description": "Awesome list from github, collect useful resources for different programing language, platform. Including libraries, open source projects,learning resources",
+      "priority": 2,
+      "public name": "Awesome List",
+      "type": "knowledge source",
+      "is public": true
+    },
+    {
+      "name": "awesome list topic",
+      "description": "stand for an awesome list topic. For example, Awesome Python, Python is the awesome list topic",
+      "priority": 2,
+      "public name": "General Knowledge",
+      "type": "concept",
+      "is public": true
+    },
+    {
+      "name": "background knowledge",
+      "description": "stand for the background knowledge in the Knowledge Graph",
+      "priority": 20,
+      "public name": "background knowledge",
+      "type": "schema",
+      "is public": false
+    },
+    {
+      "name": "entity",
+      "description": "entity in the knowledge graph, stand for a meaningful thing.",
+      "priority": 30,
+      "public name": "Concept",
+      "type": "schema",
+      "is public": false
+    },
+    {
+      "name": "extended knowledge",
+      "description": "knowledge from extraction to API documentation",
+      "priority": 30,
+      "public name": "Descriptive Knowledge",
+      "type": "schema",
+      "is public": true
+    },
+    {
+      "name": "java abstract property",
+      "description": "abstract property in java class",
+      "priority": 1,
+      "public name": "API Field",
+      "type": "category",
+      "is public": true
+    },
+    {
+      "name": "java class",
+      "description": "a class in java",
+      "priority": 1,
+      "public name": "API Class",
+      "type": "category",
+      "is public": true
+    },
+    {
+      "name": "java constructor",
+      "description": "constructor method in java class",
+      "priority": 1,
+      "public name": "API Method",
+      "type": "category",
+      "is public": true
+    },
+    {
+      "name": "java enum",
+      "description": "special java class",
+      "priority": 1,
+      "public name": "API Class",
+      "type": "category",
+      "is public": true
+    },
+    {
+      "name": "java field",
+      "description": "constant field in java class",
+      "priority": 1,
+      "public name": "API Field",
+      "type": "category",
+      "is public": true
+    },
+    {
+      "name": "java library",
+      "description": "library written in java",
+      "priority": 1,
+      "public name": "Java Library",
+      "type": "category",
+      "is public": false
+    },
+    {
+      "name": "java method",
+      "description": "method in java class",
+      "priority": 1,
+      "public name": "API Method",
+      "type": "category",
+      "is public": true
+    },
+    {
+      "name": "java method parameter",
+      "description": "method parameter of java method",
+      "priority": 1,
+      "public name": "API Parameter",
+      "type": "category",
+      "is public": true
+    },
+    {
+      "name": "java method return value",
+      "description": "method return value of java method",
+      "priority": 1,
+      "public name": "API Return Value",
+      "type": "category",
+      "is public": true
+    },
+    {
+      "name": "java nested class",
+      "description": "the class nested in a class",
+      "priority": 1,
+      "public name": "API Class",
+      "type": "category",
+      "is public": true
+    },
+    {
+      "name": "java package",
+      "description": "java package, containing a list of class",
+      "priority": 1,
+      "public name": "API Package",
+      "type": "category",
+      "is public": true
+    },
+    {
+      "name": "java throw exception description",
+      "description": "the throw exception directive of a method",
+      "priority": 1,
+      "public name": "Directive",
+      "type": "category",
+      "is public": true
+    },
+    {
+      "name": "library",
+      "description": "represent a library with specific function",
+      "priority": 1,
+      "public name": "Library",
+      "type": "category",
+      "is public": true
+    },
+    {
+      "name": "library concept",
+      "description": "some concepts about library",
+      "priority": 10,
+      "public name": "library concept",
+      "type": "category",
+      "is public": false
+    },
+    {
+      "name": "platform",
+      "description": "computer platform, such as android, linux, Windows",
+      "priority": 1,
+      "public name": "Computing Platform",
+      "type": "category",
+      "is public": true
+    },
+    {
+      "name": "platform concept",
+      "description": "some concepts about platform",
+      "priority": 10,
+      "public name": "computer platform concept",
+      "type": "category",
+      "is public": false
+    },
+    {
+      "name": "programming language",
+      "description": "programming language,such as C, C++, Java, Python",
+      "priority": 1,
+      "public name": "Programming Language",
+      "type": "category",
+      "is public": true
+    },
+    {
+      "name": "programming language concept",
+      "description": "some concept about programming language",
+      "priority": 10,
+      "public name": "programming language concept",
+      "type": "category",
+      "is public": false
+    },
+    {
+      "name": "software",
+      "description": "non-tangible executable component of a computer",
+      "priority": 15,
+      "public name": "Software",
+      "type": "category",
+      "is public": false
+    },
+    {
+      "name": "software concept",
+      "description": "some concept about software",
+      "priority": 15,
+      "public name": "software concept",
+      "type": "category",
+      "is public": false
+    },
+    {
+      "name": "relation",
+      "description": "represent relation between entity or property of entity",
+      "priority": 30,
+      "public name": "relation",
+      "type": "schema",
+      "is public": false
+    },
+    {
+      "name": "schema",
+      "description": "high level schema of knowledge graph",
+      "priority": 25,
+      "public name": "schema",
+      "type": "schema",
+      "is public": false
+    },
+    {
+      "name": "so tag",
+      "description": "Stack Overflow tags",
+      "priority": 11,
+      "public name": "Stack Overflow Tag",
+      "type": "knowledge source",
+      "is public": true
+    },
+    {
+      "name": "wall",
+      "description": "some wall node in knowledge graph, it will expand to entity not in software domain",
+      "priority": 50,
+      "public name": "Wall",
+      "type": "schema",
+      "is public": false
+    },
+    {
+      "name": "wd_property",
+      "description": "wikidata property import from wikidata, For example, 'birth day' is property",
+      "priority": 50,
+      "public name": "WikiData Property",
+      "type": "schema",
+      "is public": false
+    },
+    {
+      "name": "wikipedia",
+      "description": "knowledge from wikipedia, has a wikipedia page to explane it",
+      "priority": 50,
+      "public name": "Background Knowledge",
+      "type": "knowledge source",
+      "is public": true
+    }
+  ],
+  "public labels": [
+    {
+      "name": "Background Knowledge",
+      "description": "Represents computer-related background knowledge, mainly from WikiData or Wikipedia."
+    },
+    {
+      "name": "Functionality Category",
+      "description": "Represents the functionality category of a library, extract from the subtitle of awesome list"
+    },
+    {
+      "name": "Library",
+      "description": "Represents a library with specific function."
+    },
+    {
+      "name": "Awesome List",
+      "description": "Awesome list from github, collecting useful resources for different programing language, platform. Including libraries, open source projects,learning resources"
+    },
+    {
+      "name": "Descriptive Knowledge",
+      "description": "Descriptive knowledge extracted from API documentation"
+    },
+    {
+      "name": "Computing Platform",
+      "description": "Computer platform, such as android, linux, Windows."
+    },
+    {
+      "name": "Programming Language",
+      "description": "Programming language,such as C, C++, Java, Python."
+    },
+    {
+      "name": "Stack Overflow Tag",
+      "description": "Tag on Stack Overflow"
+    },
+    {
+      "name": "API Package",
+      "description": "API, a package in a library"
+    },
+    {
+      "name": "API Class",
+      "description": "API, a class in a package"
+    },
+    {
+      "name": "API Interface",
+      "description": "API, a interface in a package"
+    },
+    {
+      "name": "API Field",
+      "description": "a property or constant in the class or interface"
+    },
+    {
+      "name": "API Method",
+      "description": "API, a method in a class"
+    },
+    {
+      "name": "API Parameter",
+      "description": "the parameter of one method"
+    },
+    {
+      "name": "API Return Value",
+      "description": "the return value of one method"
+    }
+  ],
+  "private_property_names": [
+    "lastrevid",
+    "_create_time",
+    "_update_time",
+    "_modify_version",
+    "modified",
+    "logo image"
+  ]
+}

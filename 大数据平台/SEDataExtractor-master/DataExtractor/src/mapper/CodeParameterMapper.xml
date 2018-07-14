@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper.CodeParameterMapper">
+  <resultMap id="BaseResultMap" type="po.CodeParameter">
+    <result column="code_parameter_id" jdbcType="INTEGER" property="codeParameterId" />
+    <result column="code_method_id" jdbcType="INTEGER" property="codeMethodId" />
+    <result column="parameter_type" jdbcType="VARCHAR" property="parameterType" />
+    <result column="type_value" jdbcType="VARCHAR" property="typeValue" />
+    <result column="inner_class" jdbcType="INTEGER" property="innerClass" />
+    <result column="api" jdbcType="INTEGER" property="api" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    code_parameter_id, code_method_id, parameter_type, type_value, inner_class, api
+  </sql>
+  <select id="selectByExample" parameterType="po.CodeParameterExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from code_parameter
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <delete id="deleteByExample" parameterType="po.CodeParameterExample">
+    delete from code_parameter
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="po.CodeParameter">
+    insert into code_parameter (code_parameter_id, code_method_id, parameter_type, 
+      type_value, inner_class, api
+      )
+    values (#{codeParameterId,jdbcType=INTEGER}, #{codeMethodId,jdbcType=INTEGER}, #{parameterType,jdbcType=VARCHAR}, 
+      #{typeValue,jdbcType=VARCHAR}, #{innerClass,jdbcType=INTEGER}, #{api,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="po.CodeParameter">
+    insert into code_parameter
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="codeParameterId != null">
+        code_parameter_id,
+      </if>
+      <if test="codeMethodId != null">
+        code_method_id,
+      </if>
+      <if test="parameterType != null">
+        parameter_type,
+      </if>
+      <if test="typeValue != null">
+        type_value,
+      </if>
+      <if test="innerClass != null">
+        inner_class,
+      </if>
+      <if test="api != null">
+        api,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="codeParameterId != null">
+        #{codeParameterId,jdbcType=INTEGER},
+      </if>
+      <if test="codeMethodId != null">
+        #{codeMethodId,jdbcType=INTEGER},
+      </if>
+      <if test="parameterType != null">
+        #{parameterType,jdbcType=VARCHAR},
+      </if>
+      <if test="typeValue != null">
+        #{typeValue,jdbcType=VARCHAR},
+      </if>
+      <if test="innerClass != null">
+        #{innerClass,jdbcType=INTEGER},
+      </if>
+      <if test="api != null">
+        #{api,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="po.CodeParameterExample" resultType="java.lang.Long">
+    select count(*) from code_parameter
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update code_parameter
+    <set>
+      <if test="record.codeParameterId != null">
+        code_parameter_id = #{record.codeParameterId,jdbcType=INTEGER},
+      </if>
+      <if test="record.codeMethodId != null">
+        code_method_id = #{record.codeMethodId,jdbcType=INTEGER},
+      </if>
+      <if test="record.parameterType != null">
+        parameter_type = #{record.parameterType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.typeValue != null">
+        type_value = #{record.typeValue,jdbcType=VARCHAR},
+      </if>
+      <if test="record.innerClass != null">
+        inner_class = #{record.innerClass,jdbcType=INTEGER},
+      </if>
+      <if test="record.api != null">
+        api = #{record.api,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update code_parameter
+    set code_parameter_id = #{record.codeParameterId,jdbcType=INTEGER},
+      code_method_id = #{record.codeMethodId,jdbcType=INTEGER},
+      parameter_type = #{record.parameterType,jdbcType=VARCHAR},
+      type_value = #{record.typeValue,jdbcType=VARCHAR},
+      inner_class = #{record.innerClass,jdbcType=INTEGER},
+      api = #{record.api,jdbcType=INTEGER}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+</mapper>

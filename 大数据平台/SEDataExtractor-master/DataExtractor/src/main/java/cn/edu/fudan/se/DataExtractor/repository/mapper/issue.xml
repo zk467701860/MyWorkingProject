@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.edu.fudan.se.DataExtractor.repository.mapper.IssueMapper">
+	<resultMap id="issue" type="Issue">
+		<id property="id" column="id" />
+		<result property="repositoryId" column="repository_id" />
+		<result property="issueId" column="issue_id" />
+		<result property="createdAt" column="created_at" />
+		<result property="closedAt" column="closed_at" />
+		<result property="assigneeName" column="assignee_name" />
+		<result property="assigneeId" column="assignee_id" />
+		<result property="state" column="state" />
+		<result property="number" column="number" />
+		<result property="title" column="title" />
+		<result property="content" column="content" />
+		<result property="labels" column="labels" />
+	</resultMap>
+	<resultMap id="issueComment" type="IssueComment">
+		<id property="id" column="id" />
+		<result property="repositoryId" column="repository_id" />
+		<result property="issueId" column="issue_id" />
+		<result property="commentId" column="comment_id" />
+		<result property="authorId" column="author_id" />
+		<result property="authorName" column="author_name"/>
+		<result property="content" column="content" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+	</resultMap>
+	<resultMap id="issueEvent" type="IssueEvent">
+		<id property="id" column="id" />
+		<result property="repositoryId" column="repository_id" />
+		<result property="issueId" column="issue_id" />
+		<result property="eventId" column="event_id" />
+		<result property="aboutCommitId" column="about_commit_id" />
+		<result property="event" column="event"/>
+		<result property="createdAt" column="created_at" />
+		<result property="actorId" column="actor_id" />
+		<result property="actorName" column="actor_name" />
+	</resultMap>
+	
+	<sql id="issueselect">
+		select 
+			id,
+			repository_id,
+			issue_id, 
+			created_at,
+			closed_at,
+			assignee_name,
+			assignee_id,
+			state,
+			number,
+			title,
+			content,
+			labels
+    	from issue
+	</sql>
+	
+	<select id="selectComment" resultMap="issueComment">
+		select * from issuecomment where issue_id=#{issue_id}
+		order by created_at
+	</select>
+	<select id="selectEvent" resultMap="issueEvent">
+		select * from issueevent where issue_id=#{issue_id}
+		order by created_at
+	</select>
+	
+	<select id="countAll" resultType="long">
+		select count(*) from issue
+    </select>
+    <select id="countAllInRepository" resultType="long" parameterType="int">
+    	select count(*) from issue where repository_id = #{id}
+    </select>
+    <select id="selectAllIssue" resultMap="issue" parameterType="int">
+    	<include refid="issueselect"></include>
+    	where repository_id = #{id}
+    </select>
+    <select id="selectByPrimaryKey" resultMap="issue">
+    	<include refid="issueselect"></include>
+    	where id = #{id}
+    </select>
+    <select id="selectByIssueId" resultMap="issue">
+    	<include refid="issueselect"></include>
+    	where issue_id = #{id}
+    </select>
+    <select id="selectInScope" resultMap="issue">
+    	<include refid="issueselect"></include>
+    	where repository_id = #{repositoryId} limit #{start},#{count}
+    </select>
+    
+    <select id="selectByConditions" resultMap="issue">
+    	select 
+			id,
+			A.repository_id,
+			issue_id, 
+			created_at,
+			closed_at,
+			assignee_name,
+			assignee_id,
+			state,
+			number,
+			title,
+			content,
+			labels
+    	from issue as A left join repository as B on A.repository_id=B.repository_id
+    	<where>
+	    	<if test="repositoryName != null and perfect == 1">
+	    		B.repository_name = #{repositoryName}
+	    	</if>
+	    	<if test="repositoryName != null and perfect == 0">
+	    		B.repository_name like #{repositoryName}
+	    	</if>
+	    	<if test="title != null">
+	    		and title like #{title}
+	    	</if>
+	    	<if test="index != null">
+	    		and number = #{index}
+	    	</if>
+    	</where>
+    </select>
+</mapper>
+    

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/../bugs/.idea/bugs.iml" filepath="$PROJECT_DIR$/../bugs/.idea/bugs.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../dirbot/.idea/dirbot.iml" filepath="$PROJECT_DIR$/../dirbot/.idea/dirbot.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../history/.idea/history.iml" filepath="$PROJECT_DIR$/../history/.idea/history.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/mozilla_histroy.iml" filepath="$PROJECT_DIR$/.idea/mozilla_histroy.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../security_mozilla/.idea/security_mozilla.iml" filepath="$PROJECT_DIR$/../security_mozilla/.idea/security_mozilla.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../test/.idea/test.iml" filepath="$PROJECT_DIR$/../test/.idea/test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../tutorial/.idea/tutorial.iml" filepath="$PROJECT_DIR$/../tutorial/.idea/tutorial.iml" />
+    </modules>
+  </component>
+</project>

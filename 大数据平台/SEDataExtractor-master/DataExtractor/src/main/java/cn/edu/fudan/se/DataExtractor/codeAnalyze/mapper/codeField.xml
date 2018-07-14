@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper namespace="cn.edu.fudan.se.DataExtractor.codeAnalyze.mapper.CodeFieldMapper" >
+		<resultMap id="codeField" type="CodeField" >
+			<id property="codeFieldId" column="code_field_id" />
+			<result property="classId" column="class_id" />
+			<result property="fieldName" column="field_name" />
+			<result property="fieldType" column="field_type" />
+			<result property="type" column="type_value" />
+			<result property="innerClassId" column="inner_class" />
+			<result property="apiId" column="api" />
+		</resultMap>
+		
+        <insert id="insertField" useGeneratedKeys="true" keyProperty="codeFieldId" 
+        	parameterType="CodeField">
+        	insert into code_field (class_id, field_name, field_type, type_value, inner_class, api)
+			values (#{codeClassId}, #{fieldName}, #{type}, #{fieldValue}, #{innerClassId}, #{apiId})
+        </insert>
+        
+       <insert id="insertFieldList" useGeneratedKeys="true" keyProperty="codeFieldId" 
+        	parameterType="CodeField">
+        	insert into code_field (class_id, field_name, field_type, type_value, inner_class, api) values
+			<foreach collection ="list" item="item" index= "index" separator =",">
+				 (#{item.codeClassId}, #{item.fieldName}, #{item.type}, #{item.fieldValue}, #{item.innerClassId}, #{item.apiId})
+        	</foreach>
+        </insert>
+        
+       	<delete id="deleteField" parameterType="int">
+       		delete code_field from code_field, r_class 
+			where r_class.git_release_id=#{id} and 
+			r_class.class_id=code_field.class_id
+    	</delete>
+    	
+    	<select id="selectFieldInClass" resultMap="codeField">
+			select * from code_field where class_id=#{id}
+		</select>
+   	</mapper>
+	

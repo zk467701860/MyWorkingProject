@@ -1,0 +1,3 @@
+android.view.Window	API
+java.applet.Applet  API
+Window  API

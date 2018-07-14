@@ -1,0 +1,78 @@
+API_name%%android.view.Window#:API_Type%%class#:text%%Abstract base class for a top-level window look and behavior policy. An instance of this class should be used as the top-level view added to the window manager. It provides standard UI policies such as a background, title area, default key processing, etc.
+
+                     The only existing implementation of this abstract class is android.view.PhoneWindow, which you should instantiate when needing a Window.
+API_name%%Window.Callback#:text%%API from a Window back to its caller.
+API_name%%Window.OnFrameMetricsAvailableListener#:text%%Callback for clients that want frame timing information for each frame rendered by the Window.
+API_name%%Window.OnRestrictedCaptionAreaChangedListener#:text%%Callback for clients that want to be aware of where caption draws content.
+API_name%%android:windowAllowEnterTransitionOverlap#:text%%Flag indicating whether this Window's transition should overlap with the exiting transition of the calling Activity.
+API_name%%android:windowAllowReturnTransitionOverlap#:text%%Flag indicating whether this Window's transition should overlap with the exiting transition of the called Activity when the called Activity finishes.
+API_name%%android:windowContentTransitionManager#:text%%Reference to a TransitionManager XML resource defining the desired transitions between different window content.
+API_name%%android:windowEnterTransition#:text%%Reference to a Transition XML resource defining the desired Transition used to move Views into the initial Window's content Scene.
+API_name%%android:windowExitTransition#:text%%Reference to a Transition XML resource defining the desired Transition used to move Views out of the Window's content Scene when launching a new Activity.
+API_name%%android:windowReenterTransition#:text%%Reference to a Transition XML resource defining the desired Transition used to move Views in to the scene when returning from a previously-started Activity.
+API_name%%android:windowReturnTransition#:text%%Reference to a Transition XML resource defining the desired Transition used to move Views out of the scene when the Window is preparing to close.
+API_name%%android:windowSharedElementEnterTransition#:text%%Reference to a Transition XML resource defining the desired Transition used to move shared elements transferred into the Window's initial content Scene.
+API_name%%android:windowSharedElementExitTransition#:text%%Reference to a Transition XML resource defining the desired Transition used when starting a new Activity to move shared elements prior to transferring to the called Activity.
+API_name%%android:windowSharedElementReenterTransition#:text%%Reference to a Transition XML resource defining the desired Transition used for shared elements transferred back to a calling Activity.
+API_name%%android:windowSharedElementReturnTransition#:text%%Reference to a Transition XML resource defining the desired Transition used to move shared elements transferred back to a calling Activity.
+API_name%%android:windowSharedElementsUseOverlay#:text%%Indicates whether or not shared elements should use an overlay during transitions.
+API_name%%android:windowTransitionBackgroundFadeDuration#:text%%The duration, in milliseconds, of the window background fade duration when transitioning into or away from an Activity when called with an Activity Transition.
+API_name%%DECOR_CAPTION_SHADE_AUTO#:text%%Flag for letting the theme drive the color of the window caption controls.
+API_name%%DECOR_CAPTION_SHADE_DARK#:text%%Flag for setting dark-color controls on the window caption.
+API_name%%DECOR_CAPTION_SHADE_LIGHT#:text%%Flag for setting light-color controls on the window caption.
+API_name%%DEFAULT_FEATURES#:text%%This constant was deprecated in API level 22. use getDefaultFeatures(android.content.Context) instead.
+API_name%%FEATURE_ACTION_BAR#:text%%Flag for enabling the Action Bar.
+API_name%%FEATURE_ACTION_BAR_OVERLAY#:text%%Flag for requesting an Action Bar that overlays window content.
+API_name%%FEATURE_ACTION_MODE_OVERLAY#:text%%Flag for specifying the behavior of action modes when an Action Bar is not present.
+API_name%%FEATURE_ACTIVITY_TRANSITIONS#:text%%Enables Activities to run Activity Transitions either through sending or receiving ActivityOptions bundle created with makeSceneTransitionAnimation(android.app.Activity, android.util.Pair[]) or makeSceneTransitionAnimation(android.app.Activity, View, String).
+API_name%%FEATURE_CONTENT_TRANSITIONS#:text%%Flag for requesting that window content changes should be animated using a TransitionManager.
+API_name%%FEATURE_CONTEXT_MENU#:text%%Flag for the context menu.
+API_name%%FEATURE_CUSTOM_TITLE#:text%%Flag for custom title.
+API_name%%FEATURE_INDETERMINATE_PROGRESS#:text%%This constant was deprecated in API level 24. No longer supported starting in API 21.
+API_name%%FEATURE_LEFT_ICON#:text%%Flag for having an icon on the left side of the title bar
+API_name%%FEATURE_NO_TITLE#:text%%Flag for the "no title" feature, turning off the title at the top of the screen.
+API_name%%FEATURE_OPTIONS_PANEL#:text%%Flag for the "options panel" feature.
+API_name%%FEATURE_PROGRESS#:text%%This constant was deprecated in API level 24. No longer supported starting in API 21.
+API_name%%FEATURE_RIGHT_ICON#:text%%Flag for having an icon on the right side of the title bar
+API_name%%FEATURE_SWIPE_TO_DISMISS#:text%%Flag for requesting a decoration-free window that is dismissed by swiping from the left.
+API_name%%ID_ANDROID_CONTENT#:text%%The ID that the main layout in the XML layout file should have.
+API_name%%NAVIGATION_BAR_BACKGROUND_TRANSITION_NAME#:text%%The transitionName for the navigation bar background View when a custom background is used.
+API_name%%PROGRESS_END#:text%%This constant was deprecated in API level 24. FEATURE_PROGRESS and related methods are no longer supported starting in API 21.
+API_name%%PROGRESS_INDETERMINATE_OFF#:text%%This constant was deprecated in API level 24. FEATURE_INDETERMINATE_PROGRESS and related methods are no longer supported starting in API 21.
+API_name%%PROGRESS_INDETERMINATE_ON#:text%%This constant was deprecated in API level 24. FEATURE_INDETERMINATE_PROGRESS and related methods are no longer supported starting in API 21.
+API_name%%PROGRESS_SECONDARY_END#:text%%This constant was deprecated in API level 24. FEATURE_PROGRESS and related methods are no longer supported starting in API 21.
+API_name%%PROGRESS_SECONDARY_START#:text%%This constant was deprecated in API level 24. FEATURE_PROGRESS and related methods are no longer supported starting in API 21.
+API_name%%PROGRESS_START#:text%%This constant was deprecated in API level 24. FEATURE_PROGRESS and related methods are no longer supported starting in API 21.
+API_name%%PROGRESS_VISIBILITY_OFF#:text%%This constant was deprecated in API level 24. FEATURE_PROGRESS and related methods are no longer supported starting in API 21.
+API_name%%PROGRESS_VISIBILITY_ON#:text%%This constant was deprecated in API level 24. FEATURE_PROGRESS and related methods are no longer supported starting in API 21.
+API_name%%STATUS_BAR_BACKGROUND_TRANSITION_NAME#:text%%The transitionName for the status bar background View when a custom background is used.
+API_name%%addContentView(View view, ViewGroup.LayoutParams params)#:text%%Variation on setContentView(View, android.view.ViewGroup.LayoutParams) to add an additional content view to the screen.
+API_name%%addFlags(int flags)#:text%%Convenience function to set the flag bits as specified in flags, as per setFlags(int, int).
+API_name%%addOnFrameMetricsAvailableListener(Window.OnFrameMetricsAvailableListener listener, Handler handler)#:text%%Set an observer to collect frame stats for each frame rendererd in this window.
+API_name%%clearFlags(int flags)#:text%%Convenience function to clear the flag bits as specified in flags, as per setFlags(int, int).
+API_name%%findViewById(int id)#:text%%Finds a view that was identified by the android:id XML attribute that was processed in onCreate(Bundle).
+API_name%%getAllowEnterTransitionOverlap()#:text%%Returns how the transition set in setEnterTransition(android.transition.Transition) overlaps with the exit transition of the calling Activity.
+API_name%%getAllowReturnTransitionOverlap()#:text%%Returns how the transition set in setExitTransition(android.transition.Transition) overlaps with the exit transition of the called Activity when reentering after if finishes.
+API_name%%getAttributes()#:text%%Retrieve the current window attributes associated with this panel.
+API_name%%getCallback()#:text%%Return the current Callback interface for this window.
+API_name%%getColorMode()#:text%%Returns the requested color mode of the window, one of COLOR_MODE_DEFAULT, COLOR_MODE_WIDE_COLOR_GAMUT or COLOR_MODE_HDR.
+API_name%%getContainer()#:text%%Return the container for this Window.
+API_name%%getContentScene()#:text%%Retrieve the Scene representing this window's current content.
+API_name%%getContext()#:text%%Return the Context this window policy is running in, for retrieving resources and other information.
+API_name%%getCurrentFocus()#:text%%Return the view in this Window that currently has focus, or null if there are none.
+API_name%%getDecorView()#:text%%Retrieve the top-level window decor view (containing the standard window frame/decorations and the client's content inside of that), which can be added as a window to the window manager.
+API_name%%getDefaultFeatures(Context context)#:text%%Return the feature bits set by default on a window.
+API_name%%getEnterTransition()#:text%%Returns the transition used to move Views into the initial scene.
+API_name%%getExitTransition()#:text%%Returns the Transition that will be used to move Views out of the scene when starting a new Activity.
+API_name%%getLayoutInflater()#:text%%Quick access to the LayoutInflater instance that this Window retrieved from its Context.
+API_name%%getMediaController()#:text%%Gets the MediaController that was previously set.
+API_name%%getReenterTransition()#:text%%Returns the Transition that will be used to move Views in to the scene when returning from a previously-started Activity.
+API_name%%getReturnTransition()#:text%%Returns the Transition that will be used to move Views out of the scene when the Window is preparing to close, for example after a call to finishAfterTransition().
+API_name%%getSharedElementEnterTransition()#:text%%Returns the Transition that will be used for shared elements transferred into the content Scene.
+API_name%%getSharedElementExitTransition()#:text%%Returns the Transition to use for shared elements in the launching Window prior to transferring to the launched Activity's Window.
+API_name%%getSharedElementReenterTransition()#:text%%Returns the Transition that will be used for shared elements reentering from a started Activity after it has returned the shared element to it start location.
+API_name%%java.applet.Applet#:API_Type%%class#:text%%An applet is a small program that is intended not to be run on its own, but rather to be embedded inside another application.
+                                                     The Applet class must be the superclass of any applet that is to be embedded in a Web page or viewed by the Java Applet Viewer. The Applet class provides a standard interface between applets and their environment.
+parent_API_name%%java.applet.Applet#:API_name%%public Applet()#:API_Type%%method#:text%%Constructs a new Applet.
+                                                                                        Note: Many methods in java.applet.Applet may be invoked by the applet only after the applet is fully constructed; applet should avoid calling methods in java.applet.Applet in the constructor.
+parent_API_name%%java.applet.Applet#:API_name%%public Applet()#:text_title%%Throws#:API_Type%%method#:sub_title%%HeadlessException#:sub_title_index%%1#:text%%if GraphicsEnvironment.isHeadless() returns true.

@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.edu.fudan.se.DataExtractor.repository.mapper.GitcommitMapper">
+	<resultMap id="gitcommit" type="Gitcommit">
+		<id property="commitId" column="commit_id" />
+		<result property="gitReleaseId" column="git_release_id" />
+		<result property="gitCommitId" column="Git_commit_id" />
+		<result property="commitDate" column="commit_date" jdbcType="DATE" javaType="java.util.Date" />
+		<result property="authorId" column="author_id" />
+		<result property="authorName" column="author_name" />
+		<result property="message" column="message" />
+		<result property="additions" column="additions" />
+		<result property="deletions" column="deletions" />
+		<result property="branchName" column="branch_name" />
+		<result property="diff" column="diff" />
+		<result property="repositoryId" column="repository_id" />
+	</resultMap>
+	<resultMap id="diff" type="Diff">
+		<id property="id" column="id" />
+		<result property="commitId" column="commit_id" />
+		<result property="fileName" column="file_name" />
+		<result property="lineNumber" column="line_number" />
+		<result property="content" column="content" />
+		<result property="type" column="type" />
+		<result property="repositoryId" column="repository_id" />
+	</resultMap>
+	<resultMap id="changeOperation" type="ChangeOperation">
+		<id property="changeOperationId" column="change_operation_id" />
+		<result property="repositoryId" column="repository_id" />
+		<result property="commitId" column="commit_id" />
+		<result property="fileName" column="file_name" />
+		<result property="rootType" column="root_entity_type" />
+		<result property="rootContent" column="root_entity_content" />
+		<result property="parentType" column="parent_entity_type" />
+		<result property="parentContent" column="parent_entity_content" />
+		<result property="changedType" column="changed_entity_type" />
+		<result property="changedContent" column="changed_entity_content" />
+		<result property="level" column="significance_level" />
+		<result property="type" column="change_type" />
+	</resultMap>
+	<resultMap id="changeFile" type="ChangeFile">
+		<result property="commitId" column="commit_id" />
+		<result property="fileName" column="file_name" />
+  		<collection property="diffList" ofType="Diff" column="{sha=commit_id,file=file_name}" select="selectDiff"></collection>
+  		<collection property="changeOperationList" ofType="ChangeOperation" column="{sha=commit_id,file=file_name}" select="selectChangeOperation"></collection>
+	</resultMap>
+	<sql id="commitselect">
+		select commit_id,
+			git_release_id,
+			commit_date,
+			author_id,
+			author_name, 
+			message, 
+			additions, 
+			deletions, 
+			branch_name, 
+			diff,
+			repository_id
+		from gitcommit
+	</sql>
+	
+	<select id="selectFile" resultMap="changeFile">
+		select commit_id, file_name
+		from change_line 
+		where commit_id = #{sha}
+		group by file_name
+	</select>
+	<select id="selectDiff" resultMap="diff">
+		select * from change_line 
+		where commit_id = #{sha} and file_name= #{file}
+		order by line_number
+	</select>
+	<select id="selectChangeOperation" resultMap="changeOperation">
+		select * from change_operation 
+		where commit_id = #{sha} and file_name= #{file}
+	</select>
+	
+	<select id="countAll" resultType="long">
+		select count(*) from gitcommit
+    </select>
+    <select id="countAllInRepository" resultType="long" parameterType="int">
+    	select count(*) from gitcommit where repository_id = #{id}
+    </select>
+    <select id="selectAllCommit" resultMap="gitcommit" parameterType="int">
+    	<include refid="commitselect"></include>
+    	where repository_id = #{id}
+    </select>
+    <select id="selectByPrimaryKey" resultMap="gitcommit">
+    	<include refid="commitselect"></include>
+    	where commit_id = #{sha}
+    </select>
+    <select id="selectByMessage" resultMap="gitcommit">
+    	<include refid="commitselect"></include>
+    	where message like #{m}
+    </select>
+    <select id="selectInScope" resultMap="gitcommit">
+    	<include refid="commitselect"></include>
+    	where repository_id = #{repositoryId} 
+    	order by commit_date desc
+    	limit #{start},#{count} 
+    </select>
+    <select id="getParent" resultMap="gitcommit">
+    	select 
+			C.parent_id as commit_id,
+			git_release_id,
+			commit_date,
+			author_id,
+			author_name, 
+			message, 
+			additions, 
+			deletions, 
+			branch_name, 
+			diff,
+			A.repository_id
+    	from commitparent as C left join gitcommit as A on C.parent_id=A.commit_id
+    	where C.commit_id = #{sha}
+    </select>
+    <select id="selectByConditions" resultMap="gitcommit">
+    	<include refid="commitselect"></include>
+    	<where>
+	    	<if test="repositoryName != null and perfect == 1">
+	    		repository_name = #{repositoryName}
+	    	</if>
+	    	<if test="repositoryName != null and perfect == 0">
+	    		repository_name like #{repositoryName}
+	    	</if>
+	    	<if test="log != null">
+	    		and message like #{log}
+	    	</if>
+	    	<if test="sha != null">
+	    		and commit_id like #{sha}
+	    	</if>
+    	</where>
+    </select>
+    
+    <select id="selectByRepositoryScope" resultMap="gitcommit">
+    	<include refid="commitselect"></include>
+    	where repository_id &lt; #{maxRepositoryId} and repository_id >= #{minRepositoryId} 
+    </select>
+    <select id="selectMessageByRepositoryScope" resultType="string">
+    	select message from gitcommit
+    	where repository_id &lt; #{maxRepositoryId} and repository_id >= #{minRepositoryId} 
+    </select>
+    
+    <update id="updateTag">
+	  update gitcommit set
+	    simple_tag = #{simpleTag},
+	    cos_tag = #{cosTag}
+	  where commit_id = #{sha}
+	</update>
+</mapper>
+    

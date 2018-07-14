@@ -1,0 +1,12 @@
+android.view.Window#:Abstract base class for a top-level window look and behavior policy. An instance of this class should be used as the top-level view added to the window manager. It provides standard UI policies such as a background, title area, default key processing, etc.
+
+                     The only existing implementation of this abstract class is android.view.PhoneWindow, which you should instantiate when needing a Window.
+android.view.AbsSavedState#:A Parcelable implementation that should be used by inheritance hierarchies to ensure the state of all classes along the chain is saved.
+android.view.ActionMode#:Represents a contextual mode of the user interface. Action modes can be used to provide alternative interaction modes and replace parts of the normal UI until finished. Examples of good action modes include text selection and contextual actions.
+android.view.ActionMode.Callback2#:Extension of ActionMode.Callback to provide content rect information. This is required for ActionModes with dynamic positioning such as the ones with type TYPE_FLOATING to ensure the positioning doesn't obscure app content. If an app fails to provide a subclass of this class, a default implementation will be used.
+android.view.ActionProvider#:An ActionProvider defines rich menu interaction in a single component. ActionProvider can generate action views for use in the action bar, dynamically populate submenus of a MenuItem, and handle default menu item invocations.
+
+An ActionProvider can be optionally specified for a MenuItem and will be responsible for creating the action view that appears in the ActionBar in place of a simple button in the bar. When the menu item is presented in a way that does not allow custom action views, (e.g. in an overflow menu,) the ActionProvider can perform a default action.
+Object used to report key and button events.
+
+android.view.KeyEvent#:Each key press is described by a sequence of key events. A key press starts with a key event with ACTION_DOWN.

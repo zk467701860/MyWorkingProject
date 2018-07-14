@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="cn.edu.fudan.se.DataExtractor.api.mapper.APIMapper">
+		<resultMap id="APILibrary" type="APILibrary">
+			<id property="id" column="library_id"/>
+			<result property="name" column="name"/>
+			<result property="orgnization" column="orgnization"/>
+			<result property="introduction" column="version"/>
+			<result property="version" column="version"/>
+			<result property="jdkVersion" column="jdk_version"/>
+			<result property="pomFile" column="pom_file"/>
+			<result property="license" column="license"/>
+			<result property="docWebsite" column="doc_website"/>
+		</resultMap>
+	    <resultMap id="APIClass" type="APIClass">
+    		<id property="id" column="api_class_id" />
+    		<result property="name" column="name"/>
+    		<result property="className" column="class_name"/>
+    		<result property="description" column="description"/>
+    		<result property="comment" column="comment"/>
+    		<result property="author" column="author"/>
+    		<result property="firstVersion" column="first_version"/>
+    		<result property="extendClass" column="extend_class"/>
+    		<result property="type" column="type"/>
+    		<result property="docWebsite" column="doc_website"/>
+    		<result property="packageId" column="package_id"/>
+    	</resultMap>
+    	<resultMap id="APIMethod" type="APIMethod">
+    		<id property="id" column="api_method_id" />
+    		<result property="name" column="name"/>
+    		<result property="comment" column="comment"/>
+    		<result property="annotation" column="annotation"/>
+    		<result property="comment" column="comment"/>
+    		<result property="firstVersion" column="first_version"/>
+    		<result property="returnClass" column="return_class"/>
+    		<result property="returnString" column="return_string"/>
+    		<result property="isStatic" column="is_static"/>
+    		<result property="classId" column="class_id"/>
+    	</resultMap>
+    	<resultMap id="APIParameter" type="APIParameter">
+    		<id property="id" column="parameter_id" />
+    		<result property="name" column="name"/>
+    		<result property="classId" column="class_id"/>
+    		<result property="methodId" column="method_id"/>
+    		<result property="typeClass" column="type_class"/>
+    		<result property="typeString" column="type_string"/>
+    		<result property="firstVersion" column="first_version"/>
+    	</resultMap>
+    	<select id="getClassByName_Packagename_Version" resultMap="APIClass">
+         	select * from api_class where class_name = #{name} and package_id = (select api_package_id from api_package where name = #{packageName} and library_id = #{version});
+     	</select>
+     	<select id="getMethodsByName_Parameter_Classid" resultMap="APIMethod">
+         	select * from api_method where class_id = #{classId} and name = #{name};
+     	</select>
+     	<select id="getParametersByMethodid" resultMap="APIParameter">
+         	select * from api_parameter where method_id = #{methodId};
+     	</select>
+     	
+    	<select id="getAPILibrary" resultMap="APILibrary">
+    		select * from api_library where name=#{name} and version=#{version}
+    	</select>
+             	
+     	<select id="getApiByName" resultMap="APIClass">
+        	select * from api_class as api inner join api_package as p on api.package_id=p.api_package_id
+        	where api.class_name=#{apiName} and p.library_id = #{libraryId}
+        </select>
+        
+        <select id="getApiByQualifiedName" resultMap="APIClass">
+            select * from api_class as api inner join api_package as p on api.package_id=p.api_package_id
+        	where api.name=#{qualifiedName} and p.library_id = #{libraryId}
+        </select>
+	</mapper>

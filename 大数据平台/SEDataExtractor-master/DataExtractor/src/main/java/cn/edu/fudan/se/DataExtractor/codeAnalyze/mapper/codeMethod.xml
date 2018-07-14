@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper namespace="cn.edu.fudan.se.DataExtractor.codeAnalyze.mapper.CodeMethodMapper">
+    	<resultMap id="codeMethod" type="CodeMethod">
+			<id property="codeMethodId" column="code_method_id" />
+			<result property="methodName" column="method_name" />
+			<result property="access" column="access"/>
+			<result property="methodSignature" column="method_signature"/>
+		</resultMap>
+		
+		<select id="getOldMethod" resultMap="codeMethod">
+        	select fun_id as codeMethodId, content as methodContent from r_method where class_id=#{classId}, fun_name=#{methodName}        	
+        </select>
+        
+        <insert id="insertNewMethod" useGeneratedKeys="true" keyProperty="codeMethodId" 
+        	parameterType="CodeMethod">
+        	insert into code_method (code_class_id, method_name, method_signature, access, modifier) 
+        	values (#{codeClassId}, #{methodName}, #{methodSignature}, #{access}, #{modifier});
+        </insert>
+        
+        <insert id="insertListMethod" useGeneratedKeys="true" keyProperty="codeMethodId" 
+        	parameterType="CodeMethod">
+        	insert into code_method (code_class_id, method_name, method_signature, access, modifier) 
+        	<foreach collection ="list" item="item" index= "index" separator =",">
+        		(#{item.codeClassId}, #{item.methodName}, #{item.methodSignature},
+        		 #{item.access}, #{item.modifier})
+        	</foreach>
+        </insert>
+        <delete id="deleteMethod" parameterType="int">
+       		delete code_method from code_method, r_class 
+			where r_class.git_release_id=#{id} and 
+			r_class.class_id=code_method.code_class_id
+    	</delete>
+    	
+    	<select id="selecAllMethodInClass" parameterType="int" resultMap="codeMethod">
+    		select * from code_method where code_class_id=#{id}
+    	</select>
+        <resultMap id="fullCodeMethod" type="CodeMethod">
+			<id property="codeMethodId" column="code_method_id" />
+			<result property="codeClassId" column="code_class_id" />
+			<result property="methodName" column="method_name" />
+			<result property="methodSignature" column="method_signature"/>
+			<result property="access" column="access"/>
+			<result property="modifier" column="modifier"/>
+			<association property="returnValue" column="code_method_id" javaType="CodeParameter" select="selectReturn"/>
+			<collection property="parameterList" column="code_method_id" ofType="CodeParameter" select="selectParameters"/>
+		</resultMap>
+        <resultMap id="codeParameter" type="CodeParameter" >
+			<id property="codeParameterId" column="code_parameter_id" />
+			<result property="codeMethodId" column="code_method_id" />
+			<result property="parameterName" column="parameter_name" />
+			<result property="parameterType" column="parameter_type" />
+			<result property="parameterScope" column="parameter_scope" />
+			<result property="type" column="type_value" />
+			<result property="innerClassId" column="inner_class" />
+			<result property="apiId" column="api" />
+		</resultMap>
+		
+		<select id="selectReturn" resultMap="codeParameter">
+			select * from code_parameter where code_method_id=#{id} and parameter_scope = 'RETURN'
+		</select>
+		<select id="selectParameters" resultMap="codeParameter">
+			select * from code_parameter where code_method_id=#{id} and parameter_scope = 'PARAMETER'
+		</select>
+		
+		<select id="selectMethodInClass" resultMap="fullCodeMethod">
+			select * from code_method where code_class_id=#{id}
+		</select>
+    </mapper>

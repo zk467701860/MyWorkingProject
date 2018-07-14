@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper namespace="cn.edu.fudan.se.DataExtractor.codeAnalyze.mapper.CodeClassMapper">
+    	<resultMap id="codeClass" type="CodeClass">
+    		<id property="codeClassId" column="class_id" />
+    		<result property="className" column="class_name"/>
+    		<result property="packageName" column="package_name"/>
+    		<result property="path" column="path"/>
+    		<result property="releaseId" column="git_release_id"/>
+    	</resultMap>
+        
+        <insert id="insertCodeClass"  useGeneratedKeys="true" keyProperty="codeClassId" 
+        	parameterType="CodeClass">
+			insert into code_class (code_file_id, code_package, class_name, content)
+			values (#{codeFile.fileId},#{packageName},#{className},#{classContent})
+        </insert>
+        
+        <insert id="insertOldCodeClass" useGeneratedKeys="true" keyProperty="codeClassId" 
+        	parameterType="CodeClass">
+        	insert into r_class (class_id, package_name, class_name, git_release_id, class_path)
+        	values (#{codeClassId}, #{packageName}, #{className}, #{releaseId}, #{path})
+        </insert>
+        
+        <select id="getAllOldCodeClass" resultMap="codeClass">
+        	select * from r_class limit 10
+        </select>
+        
+        <select id="getOldInnerClassByQualifiedName" resultMap="codeClass">
+        	select class_id from r_class where git_release_id=#{releaseId} and package_name=#{packageName} and class_name=#{className}
+        </select>
+        
+        <select id="getOldInnerClassByPackageName" resultMap="codeClass">
+            select class_id from r_class where git_release_id=#{releaseId} and package_name like #{packageName} limit 1
+        </select>
+        
+        <select id="getAllClassInRelease" resultMap="codeClass">
+        	select class_id from r_class where git_release_id=#{releaseId}
+        </select>
+        <resultMap id="fullCodeClass" type="FullClass">
+    		<id property="classId" column="class_id" />
+    		<result property="className" column="class_name"/>
+    		<result property="packageName" column="package_name"/>
+    		<result property="classPath" column="class_path"/>
+    		<result property="gitReleaseId" column="git_release_id"/>
+    		<result property="extendsName" column="extends_name"/>
+    	</resultMap>
+    	<select id="selectOneClass" resultMap="fullCodeClass">
+            select * from r_class where class_id = #{id}
+        </select>
+        
+        <select id="countClass" resultType="long">
+			select count(*) from r_class
+	    </select>
+	    <select id="countParameter" resultType="long">
+			select count(*) from code_parameter
+	    </select>
+	    <select id="countMethod" resultType="long">
+			select count(*) from code_method
+	    </select>
+	    <select id="countVariable" resultType="long">
+			select count(*) from code_field
+	    </select>
+    </mapper> 

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper namespace="cn.edu.fudan.se.DataExtractor.codeAnalyze.mapper.CodeParameterMapper">
+    
+    	<resultMap id="codeParameter" type="CodeParameter" >
+			<id property="parameterId" column="code_parameter_id" />
+			<result property="methodId" column="method_id" />
+			<result property="name" column="parameter_name" />
+			<result property="type" column="parameter_type" />
+			<result property="typeValue" column="type_value" />
+			<result property="innerClassId" column="inner_class" />
+			<result property="apiId" column="api" />
+		</resultMap>
+		
+		<insert id="insertParameter" useGeneratedKeys="true" keyProperty="codeParameterId" 
+        	parameterType="CodeParameter">
+        	insert into code_parameter (code_method_id, parameter_name, parameter_scope, parameter_type, 
+        	type_value, inner_class, api) values (#{methodId}, #{name}, #{scope}, #{type},
+        	 #{typeValue}, #{innerClassId}, #{apiId})
+        </insert>
+        
+        <insert id="insertParameters" useGeneratedKeys="true" keyProperty="codeParameterId"
+        	parameterType="CodeParameter">
+        	insert into code_parameter (code_method_id, parameter_name, parameter_scope, parameter_type, 
+        	type_value, inner_class, api) values 
+        	<foreach collection ="list" item="item" index= "index" separator =",">
+        		(#{item.methodId}, #{item.name}, #{item.scope}, #{item.type}, #{item.typeValue}, #{item.innerClassId}, #{item.apiId})
+        	</foreach>
+        </insert>
+        
+	    <delete id="deleteParameter" parameterType="int">
+			delete code_method from code_method, r_class 
+			where r_class.git_release_id=#{id} and 
+			r_class.class_id=code_method.code_class_id
+		</delete>        
+		
+		<select id="selectParameterByMethodId" parameterType="int" resultMap="codeParameter">
+    		select * from code_parameter where code_method_id=#{id}
+    	</select>
+    </mapper>
+    

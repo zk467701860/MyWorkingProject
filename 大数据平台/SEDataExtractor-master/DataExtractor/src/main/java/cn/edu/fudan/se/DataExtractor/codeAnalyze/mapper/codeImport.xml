@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="cn.edu.fudan.se.DataExtractor.codeAnalyze.mapper.CodeImportMapper">
+
+	<resultMap id="codeImport" type="CodeImport">
+		<id property="importId" column="code_import_id" />
+		<result property="codeClassId" column="code_class_id" />
+		<result property="className" column="import_class" />
+		<result property="packageName" column="import_package" />
+		<result property="type" column="import_type" />
+		<result property="innerClassId" column="inner_class" />
+		<result property="apiId" column="api" />
+	</resultMap>
+
+	<insert id="insertImportNode" useGeneratedKeys="true" keyProperty="importId"
+		parameterType="CodeImport">
+		insert into code_import (code_class_id, import_package, import_class, import_type,
+		inner_class, api)
+		values (#{codeClassId}, #{packageName}, #{className}, #{type},
+		#{innerClassId}, #{apiId})
+	</insert>
+	
+	<insert id="insertImportNodeList" useGeneratedKeys="true" keyProperty="importId"
+		parameterType="CodeImport">
+		insert into code_import (code_class_id, import_package, import_class, import_type,
+		inner_class, api)
+		values 
+		<foreach collection ="list" item="item" index= "index" separator =",">
+		(#{item.codeClassId}, #{item.packageName}, #{item.className}, #{item.type},
+		#{item.innerClassId}, #{item.apiId})
+		</foreach>
+	</insert>
+	
+	<delete id="deleteImport" parameterType="int">
+        delete code_import from code_import, r_class 
+		where r_class.git_release_id=#{id} and 
+		r_class.class_id=code_import.code_class_id
+    </delete>
+    
+   	<select id="selectImportInClass" resultMap="codeImport">
+		select * from code_import where code_class_id=#{id}
+	</select>
+</mapper>

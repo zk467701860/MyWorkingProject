@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.edu.fudan.se.DataExtractor.repository.mapper.RepositoryMapper">
+	<resultMap id="repository" type="Repository">
+		<id property="repositoryId" column="repository_id" />
+		<result property="repositoryName" column="repository_name" />
+		<result property="gitAddress" column="git_address" />
+		<result property="localAddress" column="local_address" />
+		<result property="issueAddress" column="issue_address" />
+		<result property="licence" column="licence"/>
+		<result property="addedDate" column="added_date" />
+		<result property="description" column="description" />
+	</resultMap>
+	
+	<select id="countAll" resultType="long">
+		select count(*) from repository
+    </select>
+    <select id="selectAllRepository" resultMap="repository">
+    	select * from repository
+    </select>
+    <select id="selectByName" resultMap="repository" parameterType="String">
+    	select * from repository where repository_name = #{name}
+    </select>
+    <select id="selectByPrimaryKey" resultMap="repository">
+    	select * from repository where repository_id = #{id}
+    </select>
+    <select id="selectInScope" resultMap="repository">
+    	select * from repository limit #{start},#{count}
+    </select>
+    
+    <select id="selectLikeName" resultMap="repository" parameterType="String">
+    	select * from repository where repository_name like #{name}
+    </select>
+</mapper>
+    

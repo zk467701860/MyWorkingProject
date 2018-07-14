@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+  <typeAliases>
+  	<package name="cn.edu.fudan.se.DataExtractor.codeAnalyze" />
+  	<package name="cn.edu.fudan.se.DataExtractor.api"/>
+  	<package name="cn.edu.fudan.se.DataExtractor.repository"/>
+  </typeAliases>
+  <environments default="development">
+    <environment id="development">
+      <transactionManager type="JDBC"/>
+      <dataSource type="POOLED">
+        <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://10.131.252.156:3306/fdroid"/>
+        <property name="username" value="root"/>
+        <property name="password" value="root"/>
+        <property name="poolMaximumActiveConnections" value="30"/>
+        <property name="poolMaximumIdleConnections" value="10"/>
+        <property name="poolPingEnabled" value="true"/>
+        <property name="poolPingQuery" value="select 1"/>
+        <property name="poolMaximumCheckoutTime" value="60000" />  
+      </dataSource>
+    </environment>
+  </environments>
+  
+  <mappers>
+    <mapper resource="cn/edu/fudan/se/DataExtractor/codeAnalyze/mapper/codeAnalyze.xml"/>
+    <mapper resource="cn/edu/fudan/se/DataExtractor/codeAnalyze/mapper/codeMethod.xml"/>
+    <mapper resource="cn/edu/fudan/se/DataExtractor/codeAnalyze/mapper/codeImport.xml"/>
+    <mapper resource="cn/edu/fudan/se/DataExtractor/codeAnalyze/mapper/codeParameter.xml"/>
+    <mapper resource="cn/edu/fudan/se/DataExtractor/codeAnalyze/mapper/codeField.xml"/>
+    <mapper resource="cn/edu/fudan/se/DataExtractor/repository/mapper/repository.xml"/>
+    <mapper resource="cn/edu/fudan/se/DataExtractor/repository/mapper/gitcommit.xml"/>
+    <mapper resource="cn/edu/fudan/se/DataExtractor/repository/mapper/issue.xml"/>
+    <mapper resource="cn/edu/fudan/se/DataExtractor/repository/mapper/gitrelease.xml"/>
+    <mapper resource="cn/edu/fudan/se/DataExtractor/api/mapper/APIMapper.xml"/>
+  </mappers>
+</configuration>

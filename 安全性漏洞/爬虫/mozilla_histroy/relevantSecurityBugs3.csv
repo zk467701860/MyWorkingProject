@@ -1,0 +1,3364 @@
+bug406541,local java applet may read arbitrary files under certain circumstances,"
+RESOLVED
+          FIXED
+      
+","Core
+
+","Plug-ins
+
+  (show other bugs)
+","John Schoenick [:johns]
+
+",NULL,"731947
+736965
+738396
+741758
+744898
+752746
+902375
+",NULL,2007-12-03 01:43,"georgi - hopefully not receiving bugspam
+
+",2014-11-19 20:03,"abillings
+akeybl
+bajaj.bhavana
+benjamin
+brendan
+bzbarsky
+continuation
+dennis.gu
+dveditz
+garrett.f.robinson+mozilla
+gavin.sharp
+gkrizsanits
+hsivonen
+jaas
+john
+jst
+jwalden+bmo
+kbrussel
+lukasblakk+bugs
+mark
+ryanvm
+thomas.hawtin
+wkocher
+"
+bug411835,"Crash [@ GetChildListNameFor] with -moz-column, position:absolute","
+RESOLVED
+          FIXED
+      
+","Core
+
+","Layout
+
+  (show other bugs)
+","Mats Palmgren (:mats)
+
+",NULL,"468563
+ZDI-CAN-852
+","stirdom
+randomstyles
+379349
+412243
+429881
+463785
+508473
+",2008-01-10 18:34,"Jesse Ruderman
+
+",2013-02-23 17:10,"brandon
+bzbarsky
+christian
+dbaron
+dholbert
+dsicore
+dveditz
+fantasai.bugs
+gavin.sharp
+hwaara
+jwalden+bmo
+martijn.martijn
+mats
+mh+mozilla
+reed
+roc
+samuel.sidler+old
+zackw
+"
+bug476547,"Crash [@ nsTextFrameUtils::TransformText] with MathML, lquote, CSS quotes property","
+RESOLVED
+          FIXED
+      
+","Core
+
+","MathML
+
+  (show other bugs)
+","Robert O'Callahan (:roc) (Mozilla Corporation)
+
+",NULL,"515771
+","randomstyles
+347580
+",2009-02-02 16:15,"Jesse Ruderman
+
+","2011-06-13 10:01 PDT
+      (History)
+    ","bugspam.Callek
+christian
+dveditz
+ehsan
+fred.wang
+gavin.sharp
+kairo
+karlt
+ladamski
+mh+mozilla
+reed
+roc
+samuel.sidler+old
+stransky
+"
+bug490790,XMLDocument::load() doesn't check nsIContentPolicy,"
+VERIFIED
+          FIXED
+      
+","Core
+
+","XML
+
+  (show other bugs)
+","Jonas Sicking (:sicking)
+
+",NULL,NULL,"abp
+CSP
+",2009-04-30 01:32,"Wladimir Palant
+
+","2014-08-22 12:42 PDT
+      (History)
+    ","abillings
+ashshbhatt
+brandon
+dveditz
+gavin.sharp
+jonas
+josh
+jwalden+bmo
+reed
+samuel.sidler+old
+vdanen
+"
+bug452093,Redirect to mailto:address in linked image opens email editor,"
+RESOLVED
+          FIXED
+      
+","Core
+
+","ImageLib
+
+  (show other bugs)
+","Brandon Sterne (:bsterne)
+
+",NULL,NULL,NULL,2008-08-25 09:26,"Henry Sudhof
+
+","2010-07-15 13:54 PDT
+      (History)
+    ","abillings
+brandon
+bugzilla.mozilla.org
+bugzilla
+bzbarsky
+cbiesinger
+chofmann
+cmtalbert
+dveditz
+gavin.sharp
+naderman
+reed
+samuel.sidler+old
+sneaky.simian+bugzilla
+will
+"
+bug492779,PL_Base64Decode integer overflow,"
+RESOLVED
+          FIXED
+      
+","NSPR
+
+","NSPR
+
+  (show other bugs)
+","Wan-Teh Chang
+
+",NULL,NULL,NULL,2009-05-13 10:27,"monarch2020
+
+","2010-03-17 19:09 PDT
+      (History)
+    ","abillings
+alqahira
+asac
+bugzilla
+dveditz
+jlieskov
+josh
+jwalden+bmo
+mh+mozilla
+reed
+samuel.sidler+old
+wtc
+"
+bug455472,"[FIX]code injection with Content-Type: application/octet-stream, embed and svg - no plugins required","
+RESOLVED
+          FIXED
+      
+","Core
+
+","DOM
+
+  (show other bugs)
+","Boris Zbarsky [:bz]
+
+",NULL,"455629
+548290
+",NULL,2008-09-16 01:59,"georgi - hopefully not receiving bugspam
+
+","2010-06-20 09:56 PDT
+      (History)
+    ","abillings
+brandon
+bzbarsky
+dveditz
+gavin.sharp
+hskupin
+ian
+jruderman
+jwatt
+ladamski
+moz_bug_r_a4
+mrbkap
+reed
+roc
+samuel.sidler+old
+"
+bug487872,Investigate NTLM reflection vulnerability,"
+RESOLVED
+          FIXED
+      
+","Core
+
+","Networking: HTTP
+
+  (show other bugs)
+","Jim Mathies [:jimm]
+
+",NULL,"535193
+","520607
+",2009-04-10 15:50,"Brandon Sterne (:bsterne)
+
+","2010-07-15 19:10 PDT
+      (History)
+    ","abillings
+benjamin
+brendan
+bugzilla
+bzbarsky
+cbiesinger
+chofmann
+darin.moz
+dveditz
+gavin.sharp
+jbecerra
+jduell.mcbugs
+jmathies
+jst
+jwalden+bmo
+mozilla
+pallor
+reed
+robert.strong.bugs
+rrelyea
+rubys
+samuel.sidler+old
+takahashi
+wtc
+"
+bug468771,"""ASSERTION: the pointer to this sibling will be overwritten"" with -moz-column, table","
+RESOLVED
+          FIXED
+      
+","Core
+
+","Layout
+
+  (show other bugs)
+","Robert O'Callahan (:roc) (Mozilla Corporation)
+
+","476579
+view as bug list
+","478131
+","stirtable
+framedest
+430569
+476579
+",2008-12-09 21:04,"Jesse Ruderman
+
+","2010-04-11 17:01 PDT
+      (History)
+    ","abillings
+bernd_mozilla
+bzbarsky
+dbaron
+dholbert
+dveditz
+gavin.sharp
+jwalden+bmo
+karlt
+martijn.martijn
+reed
+roc
+"
+bug454363,Arbitrary code execution using FeedWriter.onPageChanged() method,"
+VERIFIED
+          FIXED
+      
+","Firefox
+
+","RSS Discovery and Preview
+
+  (show other bugs)
+","Mano (::mano, needinfo? for any questions; not reading general bugmail)
+
+",NULL,"477128
+CVE-2009-1841
+",NULL,2008-09-08 23:50,"moz_bug_r_a4
+
+","2009-10-28 12:44 PDT
+      (History)
+    ","asaf
+brandon
+bugzilla
+bzbarsky
+cab
+dietrich
+dveditz
+gavin.sharp
+hskupin
+jst
+jwalden+bmo
+mbeltzner
+mconnor
+mrbkap
+samuel.sidler+old
+zackw
+"
+bug453827,Mathematical Script Small k (U+1D4C2) makes the contents of a textbox invisible by scrolling the baseline out of view,"
+RESOLVED
+          FIXED
+      
+","Core
+
+","Layout: Form Controls
+
+  (show other bugs)
+","Karl Tomlinson (ni?:karlt)
+
+","495179
+view as bug list
+","481751
+","CTL-render-textfield
+425004
+",2008-09-05 08:07,"Juan Pablo Lopez Yacubian
+
+",2009-12-03 16:23,"abillings
+bugzilla
+bzbarsky
+corrie
+dao
+dbaron
+dsicore
+dveditz
+gavin.sharp
+jdaggett
+jfkthame
+jruderman
+karlt
+masayuki
+murali.nandigama
+reed
+roc
+samuel.sidler+old
+smontagu
+vladimir
+"
+bug467493,"Crash [@ nsHTMLReflowState::GetHypotheticalBoxContainer] with -moz-column, overflow, clear, margin, fixed pos","
+RESOLVED
+          WORKSFORME
+      
+","Core
+
+","Layout
+
+  (show other bugs)
+","Robert O'Callahan (:roc) (Mozilla Corporation)
+
+",NULL,"191448
+","randomstyles
+502017
+",2008-12-01 21:56,"Jesse Ruderman
+
+","2011-06-13 10:01 PDT
+      (History)
+    ","abillings
+cmtalbert
+dholbert
+dveditz
+fantasai.bugs
+gavin.sharp
+jwalden+bmo
+karlt
+martijn.martijn
+mats
+mozillamarcia.knous
+roc
+"
+bug498897,"Web code gets ""permission denied"" error if a content policy is present","
+RESOLVED
+          FIXED
+      
+","Core
+
+","XPConnect
+
+  (show other bugs)
+","Peter Van der Beken [:peterv]
+
+",NULL,NULL,"abp
+457022
+499910
+",2009-06-17 07:21,"Wladimir Palant
+
+","2009-09-18 14:18 PDT
+      (History)
+    ","anthony.s.hughes
+bartml
+brendan
+bugzilla
+bzbarsky
+cbook
+dao
+dveditz
+fullmetaljacket.xp+bugmail
+highmind63
+jbecerra
+jonas
+jwalden+bmo
+martijn.martijn
+moz_bug_r_a4
+mrbkap
+peterv
+reed
+ria.klaassen
+samuel.sidler+old
+shaver
+"
+bug451898,URL spoofing bug involving Firefox's error pages and document.write,"
+VERIFIED
+          FIXED
+      
+","Core
+
+","Document Navigation
+
+  (show other bugs)
+","Boris Zbarsky [:bz]
+
+",NULL,NULL,"CVE-2009-3985
+",2008-08-23 17:24,"Juan Pablo Lopez Yacubian
+
+",2010-01-26 07:51,"abillings
+alice0775
+alqahira
+anthony.s.hughes
+bob
+bugzilla-mozilla-20000923
+bugzilla
+bzbarsky
+cbiesinger
+chofmann
+dveditz
+fullmetaljacket.xp+bugmail
+gavin.sharp
+honzab.moz
+hskupin
+jbecerra
+josh
+jruderman
+jst
+jwalden+bmo
+kaie
+kairo
+michal.novotny
+omarb.public
+reed
+samuel.sidler+old
+tdowner
+xtc4uall
+"
+bug480509,Improper character escaping and unescaping in alg1485.c & secname.c,"
+RESOLVED
+          FIXED
+      
+","NSS
+
+","Libraries
+
+  (show other bugs)
+","Nelson Bolyard (seldom reads bugmail)
+
+","504449
+view as bug list
+","500495
+","483437
+483440
+",2009-02-27 00:49,"Nelson Bolyard (seldom reads bugmail)
+
+","2009-08-07 01:27 PDT
+      (History)
+    ","alvolkov.bgs
+asac
+brandon
+bugzilla
+chofmann
+dveditz
+emaldona
+gavin.sharp
+honzab.moz
+jamie
+julien.pierre
+jwalden+bmo
+kaie
+mjc
+moxie
+reed
+rrelyea
+samuel.sidler+old
+stransky
+wtc
+"
+bug460882,setTimeout loses XPCNativeWrappers,"
+RESOLVED
+          FIXED
+      
+","Core
+
+","XPConnect
+
+  (show other bugs)
+","Ben Turner (not reading bugmail, use the needinfo flag!)
+
+","473708
+view as bug list
+","396851
+435151
+478910
+479211
+479264
+479267
+479288
+479442
+480430
+496113
+CVE-2009-2664
+502458
+",NULL,2008-10-20 17:31,"Blake Kaplan (:mrbkap) (please use needinfo!)
+
+",2011-01-18 12:50,"abillings
+bent.mozilla
+bob
+brandon
+brendan
+bzbarsky
+dveditz
+eshepherd
+gavin.sharp
+jbecerra
+jst
+jwalden+bmo
+moz_bug_r_a4
+rockmfr
+samuel.sidler+old
+stransky
+trev.moz
+zeniko
+"
+bug459524,SOCKS5 reply with DNS name longer than 15 characters corrupts data,"
+RESOLVED
+          FIXED
+      
+","Core
+
+","Networking
+
+  (show other bugs)
+","Nelson Bolyard (seldom reads bugmail)
+
+",NULL,NULL,NULL,2008-10-11 15:38,"Andrej Andolsek
+
+",2009-12-16 16:20,"anthony.s.hughes
+benjamin
+bugzilla
+cbiesinger
+dveditz
+gavin.sharp
+jwalden+bmo
+michal.novotny
+nelson
+reed
+samuel.sidler+old
+"
+bug488995,Exploitable crash with watch and __defineSetter__ on nsIDOMSVGAnimatedLength::animVal,"
+VERIFIED
+          FIXED
+      
+","Core
+
+","JavaScript Engine
+
+  (show other bugs)
+","Igor Bukanov
+
+",NULL,NULL,NULL,2009-04-18 09:43,"Lucas Adamski [:ladamski]
+
+",2009-11-19 12:20,"abillings
+bob
+brendan
+chofmann
+dveditz
+igor
+jorendorff
+jwalden+bmo
+martijn.martijn
+mrbkap
+reed
+samuel.sidler+old
+sayrer
+stransky
+"
+bug480134,"Heap/integer overflows during font glyph rendering reachable in FF and Camino (libpango, CoreGraphics)","
+RESOLVED
+          FIXED
+      
+","Core
+
+","Graphics
+
+  (show other bugs)
+","Vladimir Vukicevic [:vlad] [:vladv]
+
+",NULL,NULL,NULL,2009-02-25 09:10,"Will Drewry
+
+","2013-03-31 15:58 PDT
+      (History)
+    ","abillings
+asac
+dveditz
+jamie
+jdaggett
+jfkthame
+josh
+jruderman
+jwalden+bmo
+karlt
+lcars
+marc.deslauriers
+mozilla
+pavlov
+roc
+samuel.sidler+old
+stransky
+stuart.morgan+bugzilla
+thoger
+vladimir
+"
+bug492779,PL_Base64Decode integer overflow,"
+RESOLVED
+          FIXED
+      
+","NSPR
+
+","NSPR
+
+  (show other bugs)
+","Wan-Teh Chang
+
+",NULL,NULL,NULL,2009-05-13 10:27,"monarch2020
+
+","2010-03-17 19:09 PDT
+      (History)
+    ","abillings
+alqahira
+asac
+bugzilla
+dveditz
+jlieskov
+josh
+jwalden+bmo
+mh+mozilla
+reed
+samuel.sidler+old
+wtc
+"
+bug441785,crash when closing open rdf files or right click on tree after opening rdf files [@ nsXULTemplateQueryProcessorRDF::CheckIsSeparator],"
+VERIFIED
+          FIXED
+      
+","Core
+
+","XUL
+
+  (show other bugs)
+","Mike Kaplinskiy [:mikekap] (at school, no time)
+
+",NULL,"492037
+495077
+",NULL,2008-06-25 05:10,"Christophe Charron
+
+","2011-06-13 10:01 PDT
+      (History)
+    ","abillings
+bob
+bugmail-mozilla
+dveditz
+enndeakin
+gavin.sharp
+jwalden+bmo
+mike.kaplinskiy
+mozaakash
+paul
+reed
+samuel.sidler+old
+stransky
+"
+bug495057,Crash [@ push_tag] or [@ real_write] if a message with text/enriched part is viewed,"
+RESOLVED
+          FIXED
+      
+","MailNews Core
+
+","MIME
+
+  (show other bugs)
+","David :Bienvenu
+
+",NULL,NULL,NULL,2009-05-27 07:03,"Bernd Jendrissek
+
+","2011-06-13 10:01 PDT
+      (History)
+    ","abillings
+bernd.jendrissek+mozilla
+bugmail
+davida
+dmose
+dveditz
+gary
+ludovic
+mozilla
+neil
+samuel.sidler+old
+standard8
+vseerror
+"
+bug479560,Arbitrary code execution using sidebar,"
+RESOLVED
+          FIXED
+      
+","Core
+
+","Security
+
+  (show other bugs)
+","Blake Kaplan (:mrbkap) (please use needinfo!)
+
+",NULL,NULL,"454363
+",2009-02-20 22:45,"moz_bug_r_a4
+
+","2015-10-16 11:47 PDT
+      (History)
+    ","abillings
+asaf
+brandon
+dsicore
+dtownsend
+dveditz
+gavin.sharp
+hskupin
+johnjbarton
+jst
+jwalden+bmo
+mrbkap
+rcampbell
+samuel.sidler+old
+stransky
+"
+bug477979,XUL scripts skip some security checks,"
+RESOLVED
+          FIXED
+      
+","Core
+
+","XUL
+
+  (show other bugs)
+","Wladimir Palant
+
+",NULL,NULL,"abp
+",2009-02-11 02:13,"Wladimir Palant
+
+","2013-08-25 17:59 PDT
+      (History)
+    ","abillings
+brandon
+bugzilla
+bzbarsky
+dveditz
+g.maone
+gavin.sharp
+jonas
+jst
+karlt
+samuel.sidler+old
+"
+bug479943,Restrictions on file-URL-to-file-URL scripting don't appear to be working properly,"
+RESOLVED
+          FIXED
+      
+","Core
+
+","Security: CAPS
+
+  (show other bugs)
+","Boris Zbarsky [:bz]
+
+",NULL,"424484
+",NULL,2009-02-24 01:49,"Adam Barth
+
+","2009-06-11 15:15 PDT
+      (History)
+    ","abillings
+brandon
+bzbarsky
+dveditz
+gavin.sharp
+jonas
+jst
+jwalden+bmo
+mozilla
+samuel.sidler+old
+"
+bug489131,Arbitrary code execution using event listeners attached to an element whose owner document is null,"
+VERIFIED
+          FIXED
+      
+","Core
+
+","Security
+
+  (show other bugs)
+","Olli Pettay [:smaug]
+
+",NULL,NULL,NULL,2009-04-20 00:57,"moz_bug_r_a4
+
+","2009-06-11 15:16 PDT
+      (History)
+    ","abillings
+bugs
+dveditz
+gavin.sharp
+jwalden+bmo
+samuel.sidler+old
+"
+bug486269,Race condition [@ NPObjWrapper_NewResolve] while accessing the private data of an NPObject JS wrapper class object,"
+RESOLVED
+          FIXED
+      
+","Core
+
+","Plug-ins
+
+  (show other bugs)
+","Johnny Stenback (:jst, jst@mozilla.com)
+
+","492244
+view as bug list
+",NULL,"430593
+",2009-04-01 00:41,"Reed Loden [:reed] (use needinfo?)
+
+","2009-06-17 15:59 PDT
+      (History)
+    ","abillings
+bzbarsky
+calvin.cheung
+che
+differcookie
+dveditz
+gavin.sharp
+hao.dong
+jaas
+jb
+joris_huizer
+jst
+jwalden+bmo
+kbrussel
+martijn.martijn
+mrbkap
+reed
+samuel.sidler+old
+"
+bug479880,Non-200 responses to proxy CONNECT requests lead to attacks on HTTPS,"
+RESOLVED
+          FIXED
+      
+","Core
+
+","Networking: HTTP
+
+  (show other bugs)
+","Jason Duell [:jduell] (needinfo? me)
+
+","488386
+view as bug list
+","491818
+493699
+",NULL,2009-02-23 15:16,"Adam Barth
+
+","2015-06-18 03:05 PDT
+      (History)
+    ","abillings
+ark
+asac
+brandon
+bugz
+bugzilla
+bzbarsky
+cbiesinger
+dveditz
+gavin.sharp
+hno
+hskupin
+Hugo
+jamie
+jduell.mcbugs
+jruderman
+jst
+julian.reschke
+jwalden+bmo
+ladamski
+mh+mozilla
+mozilla
+nelson
+Nicolas.Mailhot
+reed
+samuel.sidler+old
+ssnodgra
+thoger
+wtc
+"
+bug491801,Arbitrary domain cookie access from content loaded via local file (file:/// URL),"
+VERIFIED
+          FIXED
+      
+","Core
+
+","Networking
+
+  (show other bugs)
+","Daniel Veditz [:dveditz]
+
+",NULL,NULL,NULL,2009-05-06 20:33,"Gregory Fleischer
+
+","2009-06-17 18:44 PDT
+      (History)
+    ","abillings
+brandon
+cbiesinger
+darin.moz
+dveditz
+gavin.sharp
+jduell.mcbugs
+jst
+jwalden+bmo
+samuel.sidler+old
+sredna
+stefan.buller
+"
+bug484031,Reliable way to cause double frame construction for content using XBL,"
+RESOLVED
+          FIXED
+      
+","Core
+
+","Layout: Misc Code
+
+  (show other bugs)
+","Boris Zbarsky [:bz]
+
+",NULL,"495648
+",NULL,2009-03-18 11:18,"Boris Zbarsky [:bz]
+
+","2013-03-31 16:04 PDT
+      (History)
+    ","abillings
+chofmann
+dbaron
+dveditz
+gavin.sharp
+hsivonen
+ipohis
+jonas
+jruderman
+jwalden+bmo
+mozilla
+mrbkap
+roc
+samuel.sidler+old
+stransky
+"
+bug471962,"When saving an inner frame as file only, the POST data of the outer page is sent to the address of the inner page","
+RESOLVED
+          FIXED
+      
+","Toolkit
+
+","Download Manager
+
+  (show other bugs)
+",":Gavin Sharp [email: gavin@gavinsharp.com]
+
+",NULL,"483959
+484621
+","300032
+",2009-01-03 06:12,":Paolo Amadini
+
+",2009-12-19 19:24,"abillings
+asac
+bugspam.Callek
+bzbarsky
+dveditz
+gavin.sharp
+jwalden+bmo
+kairo
+sdwilsh
+"
+bug483086,non-http[s] SearchForm URIs should be ignored (possible XSS if a malicious search plugin is installed),"
+VERIFIED
+          FIXED
+      
+","Firefox
+
+","Search
+
+  (show other bugs)
+","Ryan Flint [:rflint] (ping via IRC for reviews)
+
+",NULL,"920487
+",NULL,2009-03-12 16:33,"Prateek
+
+","2013-09-26 11:00 PDT
+      (History)
+    ","abarth-mozilla
+abillings
+brandon
+dveditz
+gavin.sharp
+hskupin
+jwalden+bmo
+reed
+rflint
+samuel.sidler+old
+stransky
+"
+bug481558,Loading an untrusted stylesheet should not allow that stylesheet to inject script using XBL,"
+RESOLVED
+          FIXED
+      
+","Core
+
+","Security
+
+  (show other bugs)
+","Jonas Sicking (:sicking)
+
+",NULL,"416942
+483170
+",NULL,2009-03-04 18:58,"Cefn Hoile
+
+","2009-04-23 16:49 PDT
+      (History)
+    ","abillings
+benjamin
+brandon
+bugzilla.mozilla.org
+bugzilla.spam2
+bzbarsky
+cco
+dao
+dveditz
+g.maone
+gavin.sharp
+guninski
+highmind63
+hypah2
+jonas
+jruderman
+mark.finkle
+moz
+nthomas
+phiw2
+reed
+samuel.sidler+old
+vir.found
+xtc4uall
+"
+bug481342,Adobe Flash loaded from view-source: protocol - network security policy bypass and localhost LSO reading/writing,"
+VERIFIED
+          FIXED
+      
+","Core
+
+","Security
+
+  (show other bugs)
+","Dave Camp (:dcamp)
+
+",NULL,NULL,NULL,2009-03-03 20:52,"Gregory Fleischer
+
+","2015-07-08 05:10 PDT
+      (History)
+    ","abillings
+asac
+benjamin
+bernesb
+bugzilla
+bzbarsky
+dcamp
+dveditz
+gavin.sharp
+jduell.mcbugs
+jst
+ladamski
+puhley
+samuel.sidler+old
+"
+bug474536,The jar: scheme ignores the content-disposition: header on the inner URI,"
+VERIFIED
+          FIXED
+      
+","Core
+
+","Networking: JAR
+
+  (show other bugs)
+","Jason Duell [:jduell] (needinfo? me)
+
+",NULL,"224209
+",NULL,2009-01-20 19:58,"Daniel Veditz [:dveditz]
+
+","2012-10-26 11:06 PDT
+      (History)
+    ","abarth-mozilla
+abillings
+Alex.Eiser
+benjamin
+brandon
+bugzilla
+bzbarsky
+dcamp
+ddkilzer
+dveditz
+gavin.sharp
+gerv
+glob
+highmind63
+jduell.mcbugs
+jhorak
+jonas
+jruderman
+jst
+justdave
+justin
+jwalden+bmo
+ladamski
+LpSolit
+mzeier
+reed
+samuel.sidler+old
+stransky
+webmaster
+wurblzap
+"
+bug479336,IDN blacklist needs to include box-drawing characters,"
+RESOLVED
+          FIXED
+      
+","Core
+
+","Networking
+
+  (show other bugs)
+","Daniel Veditz [:dveditz]
+
+",NULL,NULL,NULL,2009-02-19 16:50,"Daniel Veditz [:dveditz]
+
+","2009-04-16 08:39 PDT
+      (History)
+    ","abillings
+bugzilla
+dao
+dveditz
+gavin.sharp
+highmind63
+jduell.mcbugs
+josh
+jwalden+bmo
+nelson
+reed
+samuel.sidler+old
+wtc
+"
+bug453736,"[FIX]Crash under nsSVGElement::BindToTree with <svg:use>, <svg:script>","
+VERIFIED
+          FIXED
+      
+","Core
+
+","SVG
+
+  (show other bugs)
+","Boris Zbarsky [:bz]
+
+",NULL,"436965
+","stirdom
+",2008-09-04 17:16,"Jesse Ruderman
+
+","2009-04-21 13:57 PDT
+      (History)
+    ","abillings
+brandon
+bugs
+bzbarsky
+dveditz
+gavin.sharp
+hskupin
+jonas
+jwalden+bmo
+jwatt
+kairo
+longsonr
+roc
+samuel.sidler+old
+zackw
+"
+bug476049,JSOP_DEFVAR enables gvar optimization for non-permanent properties,"
+VERIFIED
+          FIXED
+      
+","Core
+
+","JavaScript Engine
+
+  (show other bugs)
+","Igor Bukanov
+
+",NULL,NULL,"475971
+",2009-01-29 15:09,"Igor Bukanov
+
+","2009-08-07 16:50 PDT
+      (History)
+    ","asac
+bhearsum
+bob
+brendan
+dsicore
+dveditz
+gal
+kairo
+mrbkap
+samuel.sidler+old
+sayrer
+"
+bug484320,XUL <tree> _moveToEdgeShift garbage-collection exploit (zdi-can-465),"
+RESOLVED
+          FIXED
+      
+","Core
+
+","XUL
+
+  (show other bugs)
+","Olli Pettay [:smaug]
+
+",NULL,NULL,NULL,2009-03-19 19:24,"Daniel Veditz [:dveditz]
+
+","2010-03-25 17:18 PDT
+      (History)
+    ","abillings
+asac
+brandon
+bugs
+bugzilla
+chung808
+dveditz
+gary
+gavin.sharp
+graydon
+igor
+jamie
+jbecerra
+jhorak
+josh
+jst
+jwalden+bmo
+martijn.martijn
+mrbkap
+nelson
+reed
+samuel.sidler+old
+"
+bug485217,Exploitable crash in [@txMozillaXSLTProcessor::TransformToDoc ],"
+VERIFIED
+          FIXED
+      
+","Core
+
+","XSLT
+
+  (show other bugs)
+","Blake Kaplan (:mrbkap) (please use needinfo!)
+
+","460090
+485382
+view as bug list
+","504947
+","485286
+",2009-03-25 11:31,"Johnathan Nightingale [:johnath]
+
+","2010-09-19 23:21 PDT
+      (History)
+    ","abillings
+alqahira
+asac
+bartml
+brendan
+bugs
+chung808
+dmandelin
+dmose
+dveditz
+fullmetaljacket.xp+bugmail
+gavin.sharp
+gzlist
+hskupin
+jamie
+jbecerra
+john
+jonas
+josh
+jwalden+bmo
+kairo
+keith
+martijn.martijn
+moz
+peterv
+reed
+reelix
+samuel.sidler+old
+taras.mozilla
+"
+bug460090,Firefox crashes (segfault) on attempting to view XSL Transform (xml file with linked xsl) [ txMozillaXSLTProcessor::TransformToDoc ],"
+RESOLVED
+          DUPLICATE
+            of bug 485217
+
+","Core
+
+","XSLT
+
+  (show other bugs)
+","Martin
+
+",NULL,NULL,NULL,2008-10-15 11:59,"Mike Rooney
+
+",2011-03-10 23:47,"bartml
+davemgarrett
+dveditz
+gavin.sharp
+gzlist
+jonas
+jwalden+bmo
+keith
+reed
+ria.klaassen
+support
+xanthor+bz
+"
+bug485286,XSLT should heap allocate all evalContexts,"
+VERIFIED
+          FIXED
+      
+","Core
+
+","XSLT
+
+  (show other bugs)
+","Blake Kaplan (:mrbkap) (please use needinfo!)
+
+",NULL,"CVE-2009-1169
+",NULL,2009-03-25 19:23,"Blake Kaplan (:mrbkap) (please use needinfo!)
+
+","2009-06-04 14:32 PDT
+      (History)
+    ","abillings
+asac
+bartml
+caillon
+dveditz
+gavin.sharp
+hskupin
+jamie
+jbecerra
+jhorak
+jonas
+jwalden+bmo
+kairo
+keith
+peterv
+reed
+samuel.sidler+old
+"
+bug452979,Invisible control characters in URL MUST NOT be decoded when showing its address,"
+VERIFIED
+          FIXED
+      
+","Firefox
+
+","Location Bar
+
+  (show other bugs)
+","Masahiro YAMADA
+
+",NULL,NULL,"425480
+",2008-08-30 15:03,"Masahiro YAMADA
+
+","2009-03-25 22:19 PDT
+      (History)
+    ","abillings
+asac
+bugzillamozillaorg_serge_20140323
+dao
+dietrich
+dveditz
+gavin.sharp
+jdaggett
+jplopezy
+jruderman
+masayuki
+mconnor
+samuel.sidler+old
+sdwilsh
+smontagu
+stephen.donner
+vladimir
+VYV03354
+"
+bug478901,Upgrade libpng to 1.2.35 (libpng-1.2.34 and earlier might free undefined pointers),"
+VERIFIED
+          FIXED
+      
+","Core
+
+","ImageLib
+
+  (show other bugs)
+","Glenn Randers-Pehrson
+
+","479223
+view as bug list
+",NULL,NULL,2009-02-17 09:47,"Glenn Randers-Pehrson
+
+","2009-09-02 10:51 PDT
+      (History)
+    ","abillings
+alqahira
+asac
+bhearsum
+dveditz
+gavin.sharp
+hskupin
+jamie
+john+bugzilla
+jwalden+bmo
+reed
+samuel.sidler+old
+stransky
+stuart.morgan+bugzilla
+suishouen
+tor
+vladimir
+will.immendorf
+"
+bug414540,RDFXMLDataSource should reject cross-domain redirects,"
+VERIFIED
+          FIXED
+      
+","Core
+
+","RDF
+
+  (show other bugs)
+","Benjamin Smedberg [:bsmedberg]
+
+",NULL,"477930
+",NULL,2008-01-29 04:09,"georgi - hopefully not receiving bugspam
+
+",2009-03-05 03:17,"abillings
+asac
+benjamin
+bugzillamozillaorg_serge_20140323
+bzbarsky
+cbiesinger
+chofmann
+dveditz
+enndeakin
+gavin.sharp
+jhorak
+jruderman
+jwalden+bmo
+mtschrep
+samuel.sidler+old
+shaver
+stransky
+"
+bug474456,[1.9.0]Mozilla Firefox XUL Linked Clones Double Free Vulnerability (ZDI-CAN-423),"
+VERIFIED
+          FIXED
+      
+","Core
+
+","XPConnect
+
+  (show other bugs)
+","Peter Van der Beken [:peterv]
+
+",NULL,"457022
+","453751
+",2009-01-20 10:22,"Daniel Veditz [:dveditz]
+
+","2009-10-27 23:07 PDT
+      (History)
+    ","abillings
+asac
+benjamin
+bugs
+bzbarsky
+cbook
+dveditz
+gavin.sharp
+highmind63
+jonas
+jruderman
+jst
+jwalden+bmo
+martijn.martijn
+mrbkap
+peterv
+reed
+roc
+samuel.sidler+old
+vinay.rohila
+"
+bug473709,"""Assertion failure: cursor == (uint8 *)copy->messageArgs[0] + argsCopySize, at jsexn.c"" or ""Assertion failure: cursor == (uint8 *)copy->messageArgs[0] + argsCopySize, at jsexn.cpp""","
+VERIFIED
+          FIXED
+      
+","Core
+
+","JavaScript Engine
+
+  (show other bugs)
+","Blake Kaplan (:mrbkap) (please use needinfo!)
+
+","381547
+view as bug list
+",NULL,"jsfunfuzz
+443039
+",2009-01-14 21:40,"Gary Kwong [:gkw] [:nth10sd]
+
+","2009-03-29 09:28 PDT
+      (History)
+    ","asac
+bob
+brendan
+dveditz
+gal
+igor
+jorendorff
+jruderman
+jwalden+bmo
+samuel.sidler+old
+sayrer
+stransky
+"
+bug441751,Directives not to cache pages ignored.,"
+RESOLVED
+          FIXED
+      
+","Core
+
+","General
+
+  (show other bugs)
+","Dave Camp (:dcamp)
+
+","465277
+466452
+468046
+view as bug list
+","470530
+","373231
+466452
+",2008-06-25 01:00,"Paul Nel
+
+","2012-05-07 10:21 PDT
+      (History)
+    ","abillings
+alexander.epshteyn
+alfred.peng
+ambushy
+asac
+blizzard
+brandon
+bugzilla
+bzbarsky
+cbiesinger
+chadwickgab+mozilla
+dcamp
+dolske
+dveditz
+fabrizio.balliano
+gavin.sharp
+ginn.chen
+gredman
+hamoid
+highmind63
+hmdijkstra
+honzab.moz
+jst
+jwalden+bmo
+m-wada
+maccabee
+Marcin.Kasperski
+mauromol
+mikehassell54
+mnot
+mozilla.bugs
+mozilla
+mr.lukes
+northon_patrick3
+odvarko
+pascalc
+pomocJava
+por4258
+ps
+reed
+samuel.sidler+old
+stefan.ulbrich
+tim.huffam
+tristan
+whalliburton
+xtc4uall
+"
+bug460425,"[FIX].desktop allows remotely loading ""about:config"" & ""about:plugins"" with little user interaction","
+VERIFIED
+          FIXED
+      
+","Core
+
+","Networking: File
+
+  (show other bugs)
+","Boris Zbarsky [:bz]
+
+",NULL,NULL,"480907
+",2008-10-17 02:59,"georgi - hopefully not receiving bugspam
+
+",2009-03-04 18:49,"abillings
+asac
+bartml
+bzbarsky
+cbiesinger
+dveditz
+gavin.sharp
+hub
+jonas
+jwalden+bmo
+kairo
+mozilla
+samuel.sidler+old
+stransky
+"
+bug466937,File stealing with SessionStore,"
+RESOLVED
+          FIXED
+      
+","Firefox
+
+","Session Restore
+
+  (show other bugs)
+","Simon Bünzli
+
+",NULL,NULL,NULL,2008-11-26 22:03,"moz_bug_r_a4
+
+",2009-02-03 17:29,"abillings
+asac
+brandon
+dietrich
+dveditz
+gavin.sharp
+jruderman
+jwalden+bmo
+mconnor
+reed
+samuel.sidler+old
+zeniko
+"
+bug468581,XSS using a chrome XBL method and window.eval,"
+RESOLVED
+          FIXED
+      
+","Core
+
+","Security
+
+  (show other bugs)
+","Blake Kaplan (:mrbkap) (please use needinfo!)
+
+",NULL,NULL,NULL,2008-12-09 01:02,"moz_bug_r_a4
+
+","2009-05-26 14:03 PDT
+      (History)
+    ","abillings
+anthony.s.hughes
+asac
+bzbarsky
+dveditz
+gavin.sharp
+jst
+jwalden+bmo
+mrbkap
+samuel.sidler+old
+"
+bug452913,Crash [@ js_SetPropertyHelper],"
+VERIFIED
+          FIXED
+      
+","Core
+
+","JavaScript Engine
+
+  (show other bugs)
+","Igor Bukanov
+
+",NULL,NULL,"jsfunfuzz
+",2008-08-30 01:07,"Gary Kwong [:gkw] [:nth10sd]
+
+","2011-06-13 10:01 PDT
+      (History)
+    ","abillings
+asac
+bob
+brendan
+crowderbt
+dveditz
+igor
+jruderman
+mrbkap
+samuel.sidler+old
+sayrer
+shaver
+zackw
+"
+bug425046,URLs containing 0x01 are interpreted very oddly - possible overflow bug?,"
+RESOLVED
+          FIXED
+      
+","Core
+
+","Networking
+
+  (show other bugs)
+","Nobody; OK to take it and work on it
+
+",NULL,"451613
+",NULL,2008-03-25 12:19,"Chip Salzenberg
+
+",2009-01-13 11:09,"abillings
+asac
+bjarne
+brettw
+bzbarsky
+cbiesinger
+darin.moz
+dveditz
+gavin.sharp
+jamie
+jduell.mcbugs
+jwalden+bmo
+samuel.sidler+old
+"
+bug451613,URL parsing treats leading whitespace inconsistently,"
+RESOLVED
+          FIXED
+      
+","Core
+
+","Networking
+
+  (show other bugs)
+","Daniel Veditz [:dveditz]
+
+",NULL,"982302
+","CVE-2008-5508
+CVE-2008-0016
+",2008-08-21 12:39,"Simon Montagu :smontagu
+
+","2014-03-12 02:43 PDT
+      (History)
+    ","abillings
+asac
+bjarne
+brandon
+brettw
+cbiesinger
+chip
+darin.moz
+dveditz
+gavin.sharp
+highmind63
+igor
+jamie
+jdschuh
+jduell.mcbugs
+jst
+samuel.sidler+old
+"
+bug461735,"[FIX]Security: theft of strings cross-domain with redirect, <script src> and window.onerror","
+RESOLVED
+          FIXED
+      
+","Core
+
+","DOM
+
+  (show other bugs)
+","Boris Zbarsky [:bz]
+
+",NULL,"363897
+CVE-2011-1187
+","470027
+",2008-10-26 20:28,"Chris Evans
+
+",2011-03-01 05:31,"abillings
+amol12
+asac
+bugzilla
+bzbarsky
+dveditz
+gavin.sharp
+jamie
+john+bugzilla
+jruderman
+jst
+jwalden+bmo
+lcamtuf
+mrbkap
+nthomas
+reed
+samuel.sidler+old
+"
+bug453526,Remaining attack vectors in feed preview on 1.8 branch,"
+VERIFIED
+          FIXED
+      
+","Firefox
+
+","RSS Discovery and Preview
+
+  (show other bugs)
+","Mano (::mano, needinfo? for any questions; not reading general bugmail)
+
+",NULL,NULL,"360529
+",2008-09-03 14:11,":Gavin Sharp [email: gavin@gavinsharp.com]
+
+",2008-12-16 16:57,"abillings
+asac
+asaf
+dveditz
+jamie
+jbecerra
+martijn.martijn
+mbeltzner
+moz_bug_r_a4
+mrbkap
+samuel.sidler+old
+zackw
+"
+bug458679,Crash [@ js_DeflateString],"
+VERIFIED
+          FIXED
+      
+","Core
+
+","JavaScript Engine
+
+  (show other bugs)
+","Igor Bukanov
+
+",NULL,NULL,"jsfunfuzz
+",2008-10-05 23:51,"Gary Kwong [:gkw] [:nth10sd]
+
+","2011-06-13 10:01 PDT
+      (History)
+    ","abillings
+asac
+bob
+brendan
+crowderbt
+dmandelin
+dveditz
+igor
+jamie
+jruderman
+mrbkap
+samuel.sidler+old
+"
+bug458883,Make Document.documentURI and .textContent noAccess in mailnews,"
+VERIFIED
+          FIXED
+      
+","MailNews Core
+
+","Security
+
+  (show other bugs)
+","Phil Ringnalda (:philor)
+
+",NULL,NULL,"453928
+",2008-10-07 06:39,"Boris Zbarsky [:bz]
+
+",2009-01-05 13:51,"abillings
+asac
+dmose
+dveditz
+jwalden+bmo
+mkmelin+mozilla
+philringnalda
+samuel.sidler+old
+"
+bug453915,"XML injection possible in E4X parsing via ""default xml namespace""","
+VERIFIED
+          FIXED
+      
+","Core
+
+","JavaScript Engine
+
+  (show other bugs)
+","Brian Crowder
+
+",NULL,NULL,NULL,2008-09-05 17:55,"Chris Evans
+
+",2009-01-14 12:38,"abillings
+bob
+brendan
+crowderbt
+dveditz
+igor
+jruderman
+samuel.sidler+old
+sayrer
+sdwilsh
+"
+bug424733,[FIX]CSS -moz-binding property bypasses security checks on codebase principals,"
+RESOLVED
+          FIXED
+      
+","Core
+
+","Security: CAPS
+
+  (show other bugs)
+","Boris Zbarsky [:bz]
+
+",NULL,"424488
+472648
+",NULL,2008-03-23 21:39,"Collin Jackson
+
+",2009-01-08 13:42,"abarth-mozilla
+abillings
+asac
+brendan
+bzbarsky
+dsicore
+dveditz
+gavin.sharp
+jonas
+jst
+jwalden+bmo
+mrbkap
+mtschrep
+samuel.sidler+old
+"
+bug460002,It's possible to circumvent the inner window check in nsXMLHttpRequest::NotifyEventListeners(),"
+VERIFIED
+          FIXED
+      
+","Core
+
+","Security
+
+  (show other bugs)
+","Olli Pettay [:smaug]
+
+",NULL,NULL,NULL,2008-10-15 02:18,"moz_bug_r_a4
+
+",2009-01-05 13:08,"abillings
+asac
+bugs
+dveditz
+gavin.sharp
+samuel.sidler+old
+"
+bug443299,Investigate possible buffer overflow in nsDirIndexParser,"
+RESOLVED
+          FIXED
+      
+","Core
+
+","XPCOM
+
+  (show other bugs)
+","Justin Schuh
+
+",NULL,"CVE-2011-0070
+",NULL,2008-07-02 17:31,"Brandon Sterne (:bsterne)
+
+","2011-05-20 12:49 PDT
+      (History)
+    ","abillings
+asac
+cbiesinger
+dveditz
+guninski
+jdschuh
+jwalden+bmo
+pallor
+reed
+samuel.sidler+old
+"
+bug455987,integer overflow in nsEscape,"
+RESOLVED
+          FIXED
+      
+","Core
+
+","XPCOM
+
+  (show other bugs)
+","Daniel Veditz [:dveditz]
+
+",NULL,"445117
+464998
+",NULL,2008-09-18 19:01,"Daniel Veditz [:dveditz]
+
+",2009-01-28 07:32,"abillings
+asac
+bob
+bugmil.ebirol
+dietrich
+dmose
+dveditz
+gavin.sharp
+guninski
+samuel.sidler+old
+sspitzer
+"
+bug454113,e4x/extensions/regress-374025.js - invalid write,"
+VERIFIED
+          FIXED
+      
+","Core
+
+","JavaScript Engine
+
+  (show other bugs)
+","Brian Crowder
+
+",NULL,NULL,NULL,2008-09-07 16:15,"Bob Clary [:bc:]
+
+","2014-10-11 15:11 PDT
+      (History)
+    ","asac
+crowderbt
+dveditz
+igor
+jmitchell
+jruderman
+mrbkap
+samuel.sidler+old
+sayrer
+"
+bug452786,Crash due to insufficient class checking in Date class,"
+VERIFIED
+          FIXED
+      
+","Core
+
+","JavaScript Engine
+
+  (show other bugs)
+","Igor Bukanov
+
+",NULL,NULL,"340992
+",2008-08-29 07:34,"Joachim Kuebart
+
+","2010-08-27 01:45 PDT
+      (History)
+    ","abillings
+asac
+bob
+brendan
+dveditz
+igor
+reed
+samuel.sidler+old
+sdwilsh
+"
+bug447579,[FIX]file: URIs inherit chrome privs if opened from chrome,"
+VERIFIED
+          FIXED
+      
+","Core
+
+","Security: CAPS
+
+  (show other bugs)
+","Boris Zbarsky [:bz]
+
+",NULL,"424484
+","435362
+",2008-07-22 22:55,"Daniel Veditz [:dveditz]
+
+",2009-01-14 12:37,"abillings
+bzbarsky
+dveditz
+gavin.sharp
+jst
+martijn.martijn
+mrbkap
+samuel.sidler+old
+"
+bug436741,"""Assertion failure: OBJ_IS_NATIVE(obj)"" with __proto__ mangling","
+VERIFIED
+          FIXED
+      
+","Core
+
+","JavaScript Engine
+
+  (show other bugs)
+","Blake Kaplan (:mrbkap) (please use needinfo!)
+
+",NULL,NULL,"326633
+",2008-05-31 20:42,"Jesse Ruderman
+
+","2009-05-07 14:58 PDT
+      (History)
+    ","bob
+brendan
+dveditz
+jst
+jwalden+bmo
+mrbkap
+mtschrep
+samuel.sidler+old
+shaver
+"
+bug433610,Mozilla Firefox Flash Player Dynamic Module Unloading Vulnerability (ZDI-CAN-259),"
+VERIFIED
+          FIXED
+      
+","Core
+
+","Plug-ins
+
+  (show other bugs)
+","Johnny Stenback (:jst, jst@mozilla.com)
+
+",NULL,"472344
+",NULL,2008-05-13 15:32,"Brandon Sterne (:bsterne)
+
+","2015-07-08 05:10 PDT
+      (History)
+    ","abillings
+asac
+bernesb
+bob
+bzbarsky
+chofmann
+dsicore
+dveditz
+gavin.sharp
+jruderman
+jst
+ladamski
+maw
+mbeltzner
+msintov
+mtschrep
+puhley
+reed
+samuel.sidler+old
+shaver
+ws
+"
+bug455311,[FIX]mid-autumn festival vulnerability,"
+RESOLVED
+          FIXED
+      
+","Core
+
+","Networking: File
+
+  (show other bugs)
+","Boris Zbarsky [:bz]
+
+",NULL,NULL,"361857
+480907
+",2008-09-15 06:10,"Window Snyder
+
+","2013-08-27 10:26 PDT
+      (History)
+    ","abillings
+asac
+benjamin
+bugzilla
+cbiesinger
+dougt
+dsicore
+dveditz
+gavin.sharp
+guninski
+hub
+jruderman
+jst
+jwalden+bmo
+liudieyu.com
+martijn.martijn
+mihneadb
+misterffoeg
+mwobensmith
+robert.strong.bugs
+samuel.sidler+old
+"
+bug425152,heap overflow when canceling usenet message in nsNNTPProtocol::DoCancel(),"
+RESOLVED
+          FIXED
+      
+","Thunderbird
+
+","Security
+
+  (show other bugs)
+","Joshua Cranmer [:jcranmer]
+
+",NULL,NULL,NULL,2008-03-26 01:15,"georgi - hopefully not receiving bugspam
+
+","2008-09-28 11:24 PDT
+      (History)
+    ","asac
+bugmil.ebirol
+davida
+dmose
+dveditz
+gary
+gavin.sharp
+jwalden+bmo
+mozilla
+samuel.sidler+old
+"
+bug449703,[1.8 branch] XBM appears to draw uninitialized memory,"
+VERIFIED
+          FIXED
+      
+","Core
+
+","ImageLib
+
+  (show other bugs)
+","Vladimir Vukicevic [:vlad] [:vladv]
+
+",NULL,NULL,NULL,2008-08-07 18:55,"Jesse Ruderman
+
+","2008-09-23 09:47 PDT
+      (History)
+    ","abillings
+alfredkayser
+asac
+dveditz
+gavin.sharp
+joe
+pavlov
+samuel.sidler+old
+"
+bug443089,<mtd> with huge rowspan causes crash with sad nsCellMap,"
+RESOLVED
+          FIXED
+      
+","Core
+
+","MathML
+
+  (show other bugs)
+","Bernd
+
+",NULL,NULL,"347580
+348954
+",2008-07-01 20:05,"Jesse Ruderman
+
+","2008-09-25 15:01 PDT
+      (History)
+    ","asac
+bernd_mozilla
+bzbarsky
+cbook
+dholbert
+dveditz
+gavin.sharp
+jbecerra
+mozillamarcia.knous
+rbs
+roc
+samuel.sidler+old
+vladimir.sukhoy
+"
+bug419848,XPCNativeWrapper pollution using chrome js,"
+RESOLVED
+          FIXED
+      
+","Core
+
+","Security
+
+  (show other bugs)
+","Blake Kaplan (:mrbkap) (please use needinfo!)
+
+",NULL,"452295
+457788
+",NULL,2008-02-27 07:41,"moz_bug_r_a4
+
+","2008-10-13 11:22 PDT
+      (History)
+    ","abillings
+asac
+brendan
+bugs
+dveditz
+gavin.sharp
+jst
+jwalden+bmo
+mconnor
+mnyromyr
+mrbkap
+samuel.sidler+old
+sayrer
+"
+bug430658,Remaining attack vectors in FeedWriter.js,"
+RESOLVED
+          FIXED
+      
+","Firefox
+
+","RSS Discovery and Preview
+
+  (show other bugs)
+","Mano (::mano, needinfo? for any questions; not reading general bugmail)
+
+",NULL,"360529
+",NULL,2008-04-24 06:39,"moz_bug_r_a4
+
+",2009-01-05 12:11,"abillings
+asac
+asaf
+bob
+dveditz
+gavin.sharp
+jbecerra
+jst
+jwalden+bmo
+mrbkap
+philringnalda
+samuel.sidler+old
+sayrer
+"
+bug439034,Same-origin check in nsXMLDocument::OnChannelRedirect() can be circumvented,"
+RESOLVED
+          FIXED
+      
+","Core
+
+","Security
+
+  (show other bugs)
+","Johnny Stenback (:jst, jst@mozilla.com)
+
+",NULL,NULL,NULL,2008-06-13 01:50,"moz_bug_r_a4
+
+",2008-11-16 20:43,"abillings
+asac
+dveditz
+gavin.sharp
+jonas
+samuel.sidler+old
+"
+bug443288,Investigate CVE 2008-0016: crash [@ nsACString_internal::SetLength],"
+VERIFIED
+          FIXED
+      
+","Core
+
+","XPCOM
+
+  (show other bugs)
+","Simon Montagu :smontagu
+
+",NULL,"451615
+451613
+451617
+",NULL,2008-07-02 16:47,"Brandon Sterne (:bsterne)
+
+","2009-06-09 12:57 PDT
+      (History)
+    ","abillings
+asac
+benjamin
+bjarne
+cbiesinger
+dbaron
+dveditz
+gavin.sharp
+jdschuh
+jruderman
+jst
+jwalden+bmo
+reed
+samuel.sidler+old
+smontagu
+stephen.donner
+"
+bug451617,ConvertUTF8toUTF16 with incomplete multi-byte character sequence can cause overrun,"
+RESOLVED
+          FIXED
+      
+","Core
+
+","String
+
+  (show other bugs)
+","Simon Montagu :smontagu
+
+",NULL,NULL,"CVE-2008-0016
+",2008-08-21 12:48,"Simon Montagu :smontagu
+
+","2009-06-09 12:51 PDT
+      (History)
+    ","afdsfg
+asac
+benjamin
+brandon
+dbaron
+dveditz
+hst008
+jdschuh
+jwalden+bmo
+reed
+samuel.sidler+old
+stephen.donner
+"
+bug413874,Audit mail MIME code for string buffer abuse,"
+RESOLVED
+          FIXED
+      
+","MailNews Core
+
+","MIME
+
+  (show other bugs)
+","Emre Birol
+
+",NULL,"430193
+505221
+",NULL,2008-01-24 11:03,"Daniel Veditz [:dveditz]
+
+","2009-10-15 13:29 PDT
+      (History)
+    ","abillings
+asac
+bugmil.ebirol
+davida
+dmose
+dveditz
+gary
+gavin.sharp
+jwalden+bmo
+mats
+mozilla
+samuel.sidler+old
+"
+bug441360,Crash [@ CoreFoundation@0x745a4 ] opening GIF file,"
+VERIFIED
+          FIXED
+      
+","Core
+
+","Graphics
+
+  (show other bugs)
+","Nobody; OK to take it and work on it
+
+",NULL,NULL,NULL,2008-06-23 11:32,"Brandon Sterne (:bsterne)
+
+","2011-06-13 10:01 PDT
+      (History)
+    ","asac
+dholbert
+dveditz
+gavin.sharp
+halb.halb
+josh
+jwalden+bmo
+mats
+mozillamarcia.knous
+reed
+samuel.sidler+old
+vladimir
+"
+bug441120,"command-line URLs launch multi-tabs if Firefox not running, exploitable with Safari Carpet bombing","
+RESOLVED
+          FIXED
+      
+","Toolkit
+
+","Startup and Profile System
+
+  (show other bugs)
+",":Gavin Sharp [email: gavin@gavinsharp.com]
+
+",NULL,"442970
+446568
+","221445
+",2008-06-22 05:16,"Daniel Veditz [:dveditz]
+
+",2009-11-25 18:51,"abillings
+asac
+benjamin
+bent.mozilla
+bugzilla
+chung808
+dholbert
+dveditz
+gavin.sharp
+halb.halb
+hasham8888
+john+bugzilla
+josh
+jruderman
+jwalden+bmo
+mbeltzner
+mjc
+mtschrep
+reed
+samuel.sidler+old
+"
+bug441169,HTML injection into XUL error pages through badcert parameters,"
+RESOLVED
+          FIXED
+      
+","Core
+
+","Security: UI
+
+  (show other bugs)
+","Johnathan Nightingale [:johnath]
+
+",NULL,NULL,NULL,2008-06-22 11:21,"Daniel Veditz [:dveditz]
+
+","2009-04-06 21:00 PDT
+      (History)
+    ","asac
+bent.mozilla
+brandon
+bugzilla
+chung808
+dholbert
+dveditz
+gavin.sharp
+hasham8888
+john+bugzilla
+kaie
+klonos
+reed
+"
+bug440230,Firefox CSSValue Array Memory Corruption Vulnerability,"
+RESOLVED
+          FIXED
+      
+","Core
+
+","CSS Parsing and Computation
+
+  (show other bugs)
+","Johnny Stenback (:jst, jst@mozilla.com)
+
+",NULL,"337421
+",NULL,2008-06-18 18:27,"Daniel Veditz [:dveditz]
+
+",2009-01-15 21:21,"abillings
+asac
+ben.bucksch
+benjamin
+brandon
+brendan
+cbook
+chofmann
+chung808
+crowderbt
+dbaron
+dmandelin
+dveditz
+gary
+gavin.sharp
+jst
+jwalden+bmo
+mtschrep
+reed
+register
+roc
+rvaneeden
+samuel.sidler+old
+shaver
+taras.mozilla
+ws
+"
+bug439735,exploitable crash at nsBlockFrame::DrainOverflowLines,"
+VERIFIED
+          FIXED
+      
+","Core
+
+","Layout
+
+  (show other bugs)
+","David Baron [:dbaron] ⌚UTC+9 [busy, returning November 2]
+
+",NULL,"372237
+",NULL,2008-06-17 15:26,"Brandon Sterne (:bsterne)
+
+",2009-01-05 12:05,"abillings
+asac
+cbook
+dbaron
+dveditz
+gavin.sharp
+jruderman
+martijn.martijn
+roc
+"
+bug410156,URL files (IE bookmarks) cause remote code to run as local file when opened directly,"
+RESOLVED
+          FIXED
+      
+","Firefox
+
+","Security
+
+  (show other bugs)
+","Robert Strong [:rstrong] (use needinfo to contact me)
+
+",NULL,NULL,"408540
+",2007-12-29 03:27,"Fedge
+
+",2009-01-05 12:05,"abillings
+asac
+benjamin
+cbiesinger
+dougt
+dveditz
+gary
+gavin.sharp
+jruderman
+jwalden+bmo
+mconnor
+robert.strong.bugs
+samuel.sidler+old
+"
+bug411433,file location URL in directory listing should be HTML escaped,"
+VERIFIED
+          FIXED
+      
+","Core
+
+","File Handling
+
+  (show other bugs)
+","Masahiro YAMADA
+
+",NULL,NULL,NULL,2008-01-08 18:49,"Masahiro YAMADA
+
+",2009-01-05 11:59,"asac
+bob
+bzbarsky
+cbiesinger
+chofmann
+cmtalbert
+dougt
+dveditz
+gavin.sharp
+hidenosuke
+jbecerra
+jwalden+bmo
+masayuki
+reed
+samuel.sidler+old
+wildmyron
+"
+bug408329,Mac OS X Java Plugin (JEP) - LiveConnect can still use document.domain bypass to create arbitrary socket connections,"
+VERIFIED
+          FIXED
+      
+","Core
+
+","Plug-ins
+
+  (show other bugs)
+","Steven Michaud [:smichaud] (Retired)
+
+",NULL,"413161
+",NULL,2007-12-13 23:07,"Gregory Fleischer
+
+","2008-10-07 20:33 PDT
+      (History)
+    ","abillings
+bob
+bzbarsky
+dsicore
+dveditz
+gavin.sharp
+gfleischer+bugzilla
+jaas
+jonas
+jruderman
+jst
+jwalden+bmo
+kbrussel
+mtschrep
+samuel.sidler+old
+smichaud
+"
+bug423541,Arbitrary file upload via originalTarget and DOM Range,"
+VERIFIED
+          FIXED
+      
+","Core
+
+","DOM: Core & HTML
+
+  (show other bugs)
+","Olli Pettay [:smaug]
+
+",NULL,NULL,NULL,2008-03-17 16:24,"Samuel Sidler (old account; do not CC)
+
+",2009-01-05 11:53,"abillings
+asac
+bugs
+csant
+dsicore
+dveditz
+gavin.sharp
+jonas
+jst
+jwalden+bmo
+martijn.martijn
+mats
+samuel.sidler+old
+"
+bug418356,[FIX]It's unsafe to use mozIJSSubScriptLoader.loadSubScript() with non-chrome urls or chrome urls whose scheme/host part contain uppercase characters,"
+RESOLVED
+          FIXED
+      
+","Core
+
+","Security
+
+  (show other bugs)
+","Johnny Stenback (:jst, jst@mozilla.com)
+
+",NULL,"424484
+423727
+427902
+","449673
+",2008-02-18 23:27,"moz_bug_r_a4
+
+",2009-02-16 17:44,"abillings
+awuest
+ben.bucksch
+benjamin
+bhashem
+bob
+brendan
+bugzilla-mozilla-20000923
+bzbarsky
+cmtalbert
+dbo.moz
+dmose
+dtownsend
+dveditz
+eshepherd
+gavin.sharp
+gijskruitbosch+bugs
+hyperstruct+bugzilla
+ian
+jst
+jwalden+bmo
+mark.finkle
+martijn.martijn
+mozilla
+mrbkap
+mvl
+nicholas.j.santos
+samuel.sidler+old
+sayrer
+shaver
+simon.paquet
+stephen.donner
+zeniko
+"
+bug419846,Non-chrome XUL documents can load chrome scripts from the fastload file,"
+RESOLVED
+          FIXED
+      
+","Core
+
+","Security
+
+  (show other bugs)
+","Johnny Stenback (:jst, jst@mozilla.com)
+
+",NULL,"292789
+",NULL,2008-02-27 07:37,"moz_bug_r_a4
+
+",2009-01-05 11:43,"abillings
+asac
+bugs
+bzbarsky
+dveditz
+enndeakin
+gavin.sharp
+guninski
+jonas
+jst
+jwalden+bmo
+mconnor
+samuel.sidler+old
+"
+bug425576,Crash on login to Excite Japan Blog (exblog.jp) after updating to Firefox 2.0.0.13 [@ js_MarkGCThing],"
+VERIFIED
+          FIXED
+      
+","Core
+
+","JavaScript Engine
+
+  (show other bugs)
+","Igor Bukanov
+
+","426349
+428497
+view as bug list
+",NULL,"411025
+425594
+426307
+CVE-2008-1380
+",2008-03-27 18:29,"Kohei Yoshino [:kohei]
+
+","2013-03-19 07:07 PDT
+      (History)
+    ","abillings
+bob
+brandon
+brendan
+bugs
+choller
+dveditz
+gen
+hidenosuke
+igor
+jdaggett
+kaie
+martijn.martijn
+masayuki
+mrbkap
+mtschrep
+petersen
+reed
+samuel.sidler+old
+"
+bug406686,"I can still steal your bank login (spoofing using <xul:popup>, take 2)","
+RESOLVED
+          FIXED
+      
+","Core
+
+","General
+
+  (show other bugs)
+","Neil Deakin
+
+",NULL,NULL,NULL,2007-12-03 17:51,"Chris Thomas (CTho) [formerly cst@andrew.cmu.edu cst@yecc.com]
+
+","2008-03-28 14:47 PDT
+      (History)
+    ","abillings
+asac
+asaf
+chofmann
+dbaron
+dolske
+dsicore
+dveditz
+enndeakin
+gavin.sharp
+jamie
+jruderman
+jwalden+bmo
+reed
+roc
+samuel.sidler+old
+"
+bug402995,jar: protocol content can use LiveConnect to connect to arbitrary ports on localhost,"
+RESOLVED
+          FIXED
+      
+","Core
+
+","Security
+
+  (show other bugs)
+","Daniel Veditz [:dveditz]
+
+",NULL,"336303
+",NULL,2007-11-07 23:39,"Gregory Fleischer
+
+","2008-10-22 22:42 PDT
+      (History)
+    ","abillings
+asac
+benjamin
+bob
+bzbarsky
+dsicore
+dveditz
+gavin.sharp
+gfleischer+bugzilla
+jamie
+josh
+jwalden+bmo
+kbrussel
+marc
+martijn.martijn
+maw
+mtschrep
+ria.klaassen
+samuel.sidler+old
+smichaud
+steve.england
+ws
+"
+bug415034,Referer spoofing by including '@' in URL,"
+RESOLVED
+          FIXED
+      
+","Core
+
+","Networking: HTTP
+
+  (show other bugs)
+","Daniel Veditz [:dveditz]
+
+",NULL,"419116
+","415496
+415500
+",2008-01-30 23:09,"Gregory Fleischer
+
+","2008-04-16 12:22 PDT
+      (History)
+    ","abillings
+asac
+bob
+bugzilla
+cbiesinger
+dbaron
+dveditz
+gavin.sharp
+jamie
+jeanmichel.reghem
+jruderman
+jsabash
+jwalden+bmo
+martijn.martijn
+reed
+samuel.sidler+old
+ws
+"
+bug412363,Buffer overflow in external MIME bodies,"
+RESOLVED
+          FIXED
+      
+","MailNews Core
+
+","MIME
+
+  (show other bugs)
+","Emre Birol
+
+",NULL,NULL,NULL,2008-01-14 15:01,"Daniel Veditz [:dveditz]
+
+","2008-07-31 04:30 PDT
+      (History)
+    ","abillings
+asac
+bugmil.ebirol
+davida
+dmose
+gavin.sharp
+jsabash
+jwalden+bmo
+mconnor
+mkmelin+mozilla
+mozilla
+mtschrep
+philringnalda
+reed
+samuel.sidler+old
+"
+bug408076,out of bounds read in BMP decoder can lead to information disclosure,"
+RESOLVED
+          FIXED
+      
+","Core
+
+","ImageLib
+
+  (show other bugs)
+",":Gavin Sharp [email: gavin@gavinsharp.com]
+
+",NULL,NULL,NULL,2007-12-12 09:21,":Gavin Sharp [email: gavin@gavinsharp.com]
+
+","2008-03-12 09:27 PDT
+      (History)
+    ","abillings
+alfredkayser
+cbiesinger
+dcamp
+dveditz
+gavin.sharp
+gynvael
+jruderman
+jwalden+bmo
+mtschrep
+neil
+pavlov
+reed
+samuel.sidler+old
+tor
+"
+bug408164,Web forgery warning not shown until tab switch,"
+RESOLVED
+          FIXED
+      
+","Toolkit
+
+","Safe Browsing
+
+  (show other bugs)
+","Tony Chang (Google)
+
+","410506
+view as bug list
+",NULL,NULL,2007-12-13 01:57,"Emil Ljungdahl
+
+","2014-05-27 12:25 PDT
+      (History)
+    ","abillings
+bugzilla
+dcamp
+dveditz
+gavin.sharp
+jwalden+bmo
+lars.olof.moilanen
+mconnor
+tony
+"
+bug400556,"[FIX]Vulnerability allows script to see where user is headed, sniff history, and crash [@ nsDocShell::Destroy()] the browser too","
+VERIFIED
+          FIXED
+      
+","Core
+
+","DOM
+
+  (show other bugs)
+","Boris Zbarsky [:bz]
+
+",NULL,"416751
+",NULL,2007-10-20 16:17,"David Bloom
+
+","2011-06-13 10:01 PDT
+      (History)
+    ","abillings
+asac
+bugs
+bzbarsky
+dveditz
+gavin.sharp
+jonas
+jruderman
+jst
+jwalden+bmo
+martijn.martijn
+mtschrep
+peterv
+reed
+"
+bug413250,"chrome directory traversal (local disk access via ""flat"" addons)","
+RESOLVED
+          FIXED
+      
+","Core
+
+","General
+
+  (show other bugs)
+","Daniel Veditz [:dveditz]
+
+","182176
+view as bug list
+","415367
+417086
+","413451
+414327
+415116
+415191
+415292
+",2008-01-20 13:00,"Daniel Veditz [:dveditz]
+
+","2009-06-16 09:01 PDT
+      (History)
+    ","abillings
+ajvincent
+alqahira
+asac
+asrail
+benjamin
+bob
+Bugzilla-alanjstrBugs
+bugzilla.spam2
+bugzilla
+bzbarsky
+cbiesinger
+dao
+ehsan
+fullmetaljacket.xp+bugmail
+g.maone
+gavin.sharp
+gfleischer+bugzilla
+gijskruitbosch+bugs
+guninski
+harald.albrecht
+hhschwab
+hskupin
+hubert+bmo
+icedogg
+jamie
+jruderman
+jwalden+bmo
+kairo
+level
+mark
+matafagafo
+matt
+moz
+mtschrep
+nori
+nthomas
+oleg.kuznetsov
+pcvrcek
+philip.chee
+quigley
+reed
+samuel.sidler+old
+sdwilsh
+stephen.donner
+steve.england
+stuart.morgan+bugzilla
+svl-bmo
+velcrospud
+wclouser
+ws
+xtc4uall
+"
+bug413451,Bug 413250 allows to steal data from sessionstore.js,"
+RESOLVED
+          FIXED
+      
+","Core
+
+","Security
+
+  (show other bugs)
+","Daniel Veditz [:dveditz]
+
+",NULL,"413250
+",NULL,2008-01-22 01:51,"moz_bug_r_a4
+
+",2008-01-30 09:04,"abillings
+asac
+bob
+brandon
+brendan
+g.maone
+gavin.sharp
+guninski
+john+bugzilla
+jruderman
+jwalden+bmo
+mh+mozilla
+mtschrep
+reed
+robert
+samuel.sidler+old
+shaver
+svl-bmo
+ws
+"
+bug413135,"Prevent canceling individual keystrokes on input type=""file""","
+VERIFIED
+          FIXED
+      
+","Core
+
+","DOM: Core & HTML
+
+  (show other bugs)
+","Olli Pettay [:smaug]
+
+",NULL,NULL,"411072
+411073
+411075
+411077
+411080
+411236
+",2008-01-19 09:31,"Olli Pettay [:smaug]
+
+","2008-09-04 21:40 PDT
+      (History)
+    ","asac
+dveditz
+gavin.sharp
+gfleischer+bugzilla
+jonas
+jst
+jwalden+bmo
+samuel.sidler+old
+"
+bug402649,[FIX]window.location race condition can be used to spoof referer header,"
+RESOLVED
+          FIXED
+      
+","Core
+
+","DOM
+
+  (show other bugs)
+","Boris Zbarsky [:bz]
+
+",NULL,"404627
+","402713
+",2007-11-05 20:20,"Gregory Fleischer
+
+","2008-03-20 12:56 PDT
+      (History)
+    ","asac
+bob
+cbook
+dtownsend
+dveditz
+gavin.sharp
+gfleischer+bugzilla
+jruderman
+jst
+jwalden+bmo
+moz_bug_r_a4
+mrbkap
+reed
+"
+bug403331,Sort out jar: behavior on HTTP redirects,"
+RESOLVED
+          FIXED
+      
+","Core
+
+","Networking: JAR
+
+  (show other bugs)
+","Dave Camp (:dcamp)
+
+",NULL,"405570
+","jarxss
+403552
+",2007-11-10 10:11,"Boris Zbarsky [:bz]
+
+","2008-03-20 12:35 PDT
+      (History)
+    ","abillings
+asrail
+BijuMailList
+bob
+bugzilla.spam2
+cbiesinger
+dcamp
+djcater+bugzilla
+djm
+dveditz
+g.maone
+gavin.sharp
+ismail
+jcea
+john+bugzilla
+jwalden+bmo
+lcamtuf
+mtschrep
+pavel.penaz
+reed
+ryanvm
+samuel.sidler+old
+steve.england
+vvduma
+"

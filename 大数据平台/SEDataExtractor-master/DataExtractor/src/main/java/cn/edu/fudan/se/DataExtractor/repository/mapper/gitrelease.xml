@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.edu.fudan.se.DataExtractor.repository.mapper.GitreleaseMapper">
+	<resultMap id="gitrelease" type="Gitrelease">
+		<id property="gitReleaseId" column="git_release_id" />
+		<result property="tag" column="tag" />
+		<result property="createdAt" column="created_at" />
+		<result property="content" column="content" />
+		<result property="releaseCommitId" column="release_commit_id" />
+		<result property="zipAddress" column="zip_address" />
+		<result property="srcAddress" column="src_address" />
+		<association property="repository" column="repository_id" javaType="Repository" resultMap="repository"/>
+	</resultMap>
+	<resultMap id="simplegitrelease" type="SimpleGitrelease">
+		<id property="gitReleaseId" column="git_release_id" />
+		<result property="tag" column="tag" />
+		<result property="createdAt" column="created_at" />
+		<result property="content" column="content" />
+		<result property="releaseCommitId" column="release_commit_id" />
+		<result property="zipAddress" column="zip_address" />
+		<result property="srcAddress" column="src_address" />
+		<result property="repositoryId" column="repository_id" />
+	</resultMap>
+	
+	<resultMap id="repository" type="Repository">
+		<id property="repositoryId" column="repository_id" />
+		<result property="repositoryName" column="repository_name" />
+		<result property="gitAddress" column="git_address" />
+		<result property="localAddress" column="local_address" />
+		<result property="issueAddress" column="issue_address" />
+		<result property="licence" column="licence"/>
+		<result property="addedDate" column="added_date" />
+		<result property="description" column="description" />
+	</resultMap>
+	
+	<resultMap id="simpleclass" type="SimpleClass">
+		<id property="classId" column="class_id" />
+		<result property="packageName" column="package_name" />
+		<result property="className" column="class_name"/>
+		<result property="releaseId" column="git_release_id" />
+	</resultMap>
+	<resultMap id="simplepackage" type="SimplePackage">
+		<result property="releaseId" column="git_release_id" />
+		<result property="packageName" column="package_name" />
+	</resultMap>
+	<resultMap id="simplerelease" type="SimpleRelease">
+		<result property="releaseId" column="git_release_id" />
+		<result property="tag" column="tag" />
+	</resultMap>
+	
+	<resultMap id="classInPackage" type="ClassInPackage">
+		<id property="classId" column="class_id" />
+		<result property="className" column="class_name"/>
+		<collection property="importList" ofType="string" column="class_id" select="selectImportPart"></collection>
+		<collection property="fieldList" ofType="string" column="class_id" select="selectFieldPart"></collection>
+		<collection property="methodList" ofType="string" column="class_id" select="selectMethodPart"></collection>
+	</resultMap>
+	
+	<sql id="releaseselect">
+		select 
+			A.git_release_id, 
+			tag, 
+			created_at, 
+			content, 
+			release_commit_id, 
+			zip_address, 
+			src_address,
+			C.repository_id,
+			repository_name, 
+			git_address, 
+			issue_address, 
+			local_address, 
+			description, 
+			license,
+			added_date
+    	from gitrelease as A left join repository as C on A.repository_id=C.repository_id
+	</sql>
+	
+	<select id="selectImportPart" resultType="string">
+		select import_package from code_import where code_class_id=#{id}
+	</select>
+	<select id="selectFieldPart" resultType="string">
+		select field_name from code_field where class_id=#{id}
+	</select>
+	<select id="selectMethodPart" resultType="string">
+		select method_name from code_method where code_class_id=#{id}
+	</select>
+	<select id="selectClassPartInPackage" resultMap="classInPackage">
+		select class_id, class_name
+		from r_class 
+		where class_id=#{id}
+	</select>
+	
+	<select id="selectPackage" resultMap="simplepackage">
+		select git_release_id, package_name 
+		from r_class 
+		where git_release_id = #{id} 
+		group by package_name
+	</select>
+	<select id="selectRelease" resultMap="simplerelease">
+		select git_release_id, tag 
+		from gitrelease
+		where repository_id = #{id}
+	</select>
+	<select id="selectClass" resultMap="simpleclass">
+		select class_id,package_name,class_name,git_release_id 
+		from r_class 
+		where git_release_id=#{id}
+	</select>
+	
+	<select id="selectSimpleGitrelease" resultMap="simplegitrelease">
+		select * from gitrelease where repository_id = #{id}
+	</select>
+	
+	<select id="countAll" resultType="long">
+		select count(*) from gitrelease
+    </select>
+    <select id="countAllInRepository" resultType="long" parameterType="int">
+    	select count(*) from gitrelease where repository_id = #{id}
+    </select>
+    <select id="selectByPrimaryKey" resultMap="gitrelease">
+    	<include refid="releaseselect"></include>
+    	where A.git_release_id = #{id}
+    </select>
+    <select id="selectAllRelease" resultMap="gitrelease">
+    	<include refid="releaseselect"></include>
+    	where A.repository_id = #{id}
+    </select>
+    <select id="selectLatestInRepository" resultMap="gitrelease">
+    	select 
+			A.git_release_id, 
+			tag, 
+			max(created_at) as created_at, 
+			content, 
+			release_commit_id, 
+			zip_address, 
+			src_address,
+			C.repository_id,
+			repository_name, 
+			git_address, 
+			issue_address, 
+			local_address, 
+			description, 
+			license,
+			added_date
+    	from gitrelease as A left join repository as C on A.repository_id=C.repository_id
+    	where A.repository_id = #{id}
+    </select>
+    
+    <select id="getAllUnexpectedRelease" resultMap="gitrelease">
+        select * from unexpectedRelease as U, gitrelease as A where U.release_id=A.git_release_id
+    </select>
+    
+    <select id="selectByConditions" resultMap="gitrelease">
+    	<include refid="releaseselect"></include>
+    	<where>
+	    	<if test="repositoryName != null and perfect == 1">
+	    		C.repository_name = #{repositoryName}
+	    	</if>
+	    	<if test="repositoryName != null and perfect == 0">
+	    		C.repository_name like #{repositoryName}
+	    	</if>
+	    	<if test="tag != null">
+	    		and tag like #{tag}
+	    	</if>
+    	</where>
+    </select>
+    
+	<select id="selectClassInPackage" resultMap="simpleclass">
+		select class_id,package_name,class_name,git_release_id 
+		from r_class 
+		where git_release_id=#{releaseId} and package_name=#{packageName}
+	</select>
+</mapper>
+    

@@ -1,0 +1,1774 @@
+commit_id,cvs_id,bug_id,committer,commit_msg,commit_time,diff_content
+2b8c750dd11ba54aab63785f08206f4a67aa1fe5,336,672485,Blair McBride,"Bug 672485 - Ensure window watcher is defined. r=dtownsend,jst
+",1313029788,"""diff --git a/toolkit/mozapps/extensions/amWebInstallListener.js b/toolkit/mozapps/extensions/amWebInstallListener.js
+index 43da0e3..45bb218 100644
+--- a/toolkit/mozapps/extensions/amWebInstallListener.js
++++ b/toolkit/mozapps/extensions/amWebInstallListener.js
+@@ -54,6 +54,8 @@ Components.utils.import(""""resource://gre/modules/XPCOMUtils.jsm"""");
+ Components.utils.import(""""resource://gre/modules/AddonManager.jsm"""");
+ Components.utils.import(""""resource://gre/modules/Services.jsm"""");
+ 
++const URI_XPINSTALL_DIALOG = """"chrome://mozapps/content/xpinstall/xpinstallConfirm.xul"""";
++
+ // Installation can begin from any of these states
+ const READY_STATES = [
+   AddonManager.STATE_AVAILABLE,
+@@ -204,8 +206,13 @@ Installer.prototype = {
+     args.installs = this.downloads;
+     args.wrappedJSObject = args;
+ 
+-    Services.ww.openWindow(this.window, """"chrome://mozapps/content/xpinstall/xpinstallConfirm.xul"""",
+-                           null, """"chrome,modal,centerscreen"""", args);
++    try {
++      Services.ww.openWindow(this.window, URI_XPINSTALL_DIALOG,
++                             null, """"chrome,modal,centerscreen"""", args);
++    } catch (e) {
++      this.downloads.forEach(function(aInstall) aInstall.cancel());
++      notifyObservers(""""addon-install-failed"""", this.window, this.url, failed);
++    }
+   },
+ 
+   /**
+diff --git a/toolkit/mozapps/extensions/test/xpinstall/Makefile.in b/toolkit/mozapps/extensions/test/xpinstall/Makefile.in
+index c18337d..76759f4 100644
+--- a/toolkit/mozapps/extensions/test/xpinstall/Makefile.in
++++ b/toolkit/mozapps/extensions/test/xpinstall/Makefile.in
+@@ -98,6 +98,7 @@ _BROWSER_FILES = head.js \
+                  browser_bug611242.js \
+                  browser_bug638292.js \
+                  browser_bug645699.js \
++                 browser_bug672485.js \
+                  unsigned.xpi \
+                  signed.xpi \
+                  signed2.xpi \
+diff --git a/toolkit/mozapps/extensions/test/xpinstall/browser_bug672485.js b/toolkit/mozapps/extensions/test/xpinstall/browser_bug672485.js
+new file mode 100644
+index 0000000..3bde4348
+--- /dev/null
++++ b/toolkit/mozapps/extensions/test/xpinstall/browser_bug672485.js
+@@ -0,0 +1,48 @@
++/* Any copyright is dedicated to the Public Domain.
++ * http://creativecommons.org/publicdomain/zero/1.0/
++ */
++
++function test() {
++  Harness.installConfirmCallback = confirm_install;
++  Harness.installFailedCallback = failed_install;
++  Harness.installEndedCallback = complete_install;
++  Harness.installsCompletedCallback = finish_test;
++  Harness.setup();
++  
++  delete Services.ww;
++  is(Services.ww, undefined, """"Services.ww should now be undefined"""");
++
++  var pm = Services.perms;
++  pm.add(makeURI(""""http://example.com/""""), """"install"""", pm.ALLOW_ACTION);
++
++  var triggers = encodeURIComponent(JSON.stringify({
++    """"Unsigned XPI"""": TESTROOT + """"unsigned.xpi""""
++  }));
++  gBrowser.selectedTab = gBrowser.addTab();
++  gBrowser.loadURI(TESTROOT + """"installtrigger.html?"""" + triggers);
++}
++
++function confirm_install(window) {
++  ok(false, """"Should not see the install dialog"""");
++  return false;
++}
++
++function failed_install() {
++  ok(true, """"Install should fail"""");
++}
++
++function complete_install() {
++  ok(false, """"Install should not have completed"""");
++  return false;
++}
++
++function finish_test(count) {
++  is(count, 0, """"0 Add-ons should have been successfully installed"""");
++
++  gBrowser.removeCurrentTab();
++  
++  Services.ww = Cc[""""@mozilla.org/embedcomp/window-watcher;1""""]
++                  .getService(Ci.nsIWindowWatcher);
++  
++  Harness.finish();
++}"""
+3b524d2abb5d8be8a67d4921a48d504f0b07f99b,906,674182,Blake Kaplan,"Fix bug 674182. r=jst
+",1311794966,"""diff --git a/caps/src/nsScriptSecurityManager.cpp b/caps/src/nsScriptSecurityManager.cpp
+index ca75bcf..423b235 100644
+--- a/caps/src/nsScriptSecurityManager.cpp
++++ b/caps/src/nsScriptSecurityManager.cpp
+@@ -2639,7 +2639,7 @@ nsScriptSecurityManager::IsCapabilityEnabled(const char *capability,
+         // the JS engine via JS_EvaluateScript or similar APIs.
+         if (JS_IsGlobalFrame(cx, fp))
+             break;
+-    } while ((fp = JS_FrameIterator(cx, &fp)) != nsnull);
++    } while (fp != target && (fp = JS_FrameIterator(cx, &fp)) != nsnull);
+ 
+     if (!previousPrincipal)
+     {
+diff --git a/js/src/xpconnect/wrappers/CrossOriginWrapper.cpp b/js/src/xpconnect/wrappers/CrossOriginWrapper.cpp
+index 3f6747e..a4ae696 100644
+--- a/js/src/xpconnect/wrappers/CrossOriginWrapper.cpp
++++ b/js/src/xpconnect/wrappers/CrossOriginWrapper.cpp
+@@ -115,6 +115,10 @@ NoWaiverWrapper::enter(JSContext *cx, JSObject *wrapper, jsid id, Action act, bo
+     if (!ssm) {
+         return true;
+     }
++
++    // Note: By the time enter is called here, JSCrossCompartmentWrapper has
++    // already pushed the fake stack frame onto cx. Because of this, the frame
++    // that we're clamping is the one that we want (the one in our compartment).
+     JSStackFrame *fp = NULL;
+     nsIPrincipal *principal = GetCompartmentPrincipal(wrappedObject(wrapper)->compartment());
+     nsresult rv = ssm->PushContextPrincipal(cx, JS_FrameIterator(cx, &fp), principal);"""
+79d0c4f1cff682fb8d978fd80aa3a9b53f552faf,1614,653926,Blake Kaplan,"Fix bug 653926. r=jst
+",1310679341,"""diff --git a/js/src/xpconnect/loader/mozJSSubScriptLoader.cpp b/js/src/xpconnect/loader/mozJSSubScriptLoader.cpp
+index 0f9dd64..ca86d46 100644
+--- a/js/src/xpconnect/loader/mozJSSubScriptLoader.cpp
++++ b/js/src/xpconnect/loader/mozJSSubScriptLoader.cpp
+@@ -143,7 +143,7 @@ mozJSSubScriptLoader::ReadScript(nsIURI *uri, JSContext *cx, JSObject *target_ob
+     /* we can't hold onto jsPrincipals as a module var because the
+      * JSPRINCIPALS_DROP macro takes a JSContext, which we won't have in the
+      * destructor */
+-    rv = mSystemPrincipal->GetJSPrincipals(cx, &jsPrincipals);
++    rv = principal->GetJSPrincipals(cx, &jsPrincipals);
+     if (NS_FAILED(rv) || !jsPrincipals) {
+         return ReportError(cx, LOAD_ERROR_NOPRINCIPALS);
+     }
+@@ -302,13 +302,24 @@ mozJSSubScriptLoader::LoadSubScript (const PRUnichar * aURL
+ 
+     // Remember an object out of the calling compartment so that we
+     // can properly wrap the result later.
++    nsCOMPtr<nsIPrincipal> principal = mSystemPrincipal;
+     JSObject *result_obj = target_obj;
+     target_obj = JS_FindCompilationScope(cx, target_obj);
+     if (!target_obj) return NS_ERROR_FAILURE;
+-#ifdef DEBUG_rginda
+     if (target_obj != result_obj)
++    {
++        nsCOMPtr<nsIScriptSecurityManager> secman =
++            do_GetService(NS_SCRIPTSECURITYMANAGER_CONTRACTID);
++        if (!secman)
++            return NS_ERROR_FAILURE;
++
++        rv = secman->GetObjectPrincipal(cx, target_obj, getter_AddRefs(principal));
++        NS_ENSURE_SUCCESS(rv, rv);
++
++#ifdef DEBUG_rginda
+         fprintf (stderr, """"Final global: %p\n"""", target_obj);
+ #endif
++    }
+ 
+     JSAutoEnterCompartment ac;
+     if (!ac.enter(cx, target_obj))"""
+579e082c3c53b0d7b9240322d8ae391fe3ee4786,1714,675747,Chris Pearce,"Bug 675747 - Handle multiple bos pages in a single ogg bitstream. r=doublec
+",1312490664,"""diff --git a/content/media/ogg/nsOggReader.cpp b/content/media/ogg/nsOggReader.cpp
+index 0a8ebb9..8b68ece 100644
+--- a/content/media/ogg/nsOggReader.cpp
++++ b/content/media/ogg/nsOggReader.cpp
+@@ -194,14 +194,17 @@ nsresult nsOggReader::ReadMetadata(nsVideoInfo* aInfo)
+     int serial = ogg_page_serialno(&page);
+     nsOggCodecState* codecState = 0;
+ 
+-    if (ogg_page_bos(&page)) {
+-      NS_ASSERTION(!readAllBOS, """"We shouldn't encounter another BOS page"""");
++    if (!ogg_page_bos(&page)) {
++      // We've encountered a non Beginning Of Stream page. No more BOS pages
++      // can follow in this Ogg segment, so there will be no other bitstreams
++      // in the Ogg (unless it's invalid).
++      readAllBOS = PR_TRUE;
++    } else if (!mCodecStates.Get(serial, nsnull)) {
++      // We've not encountered a stream with this serial number before. Create
++      // an nsOggCodecState to demux it, and map that to the nsOggCodecState
++      // in mCodecStates.
+       codecState = nsOggCodecState::Create(&page);
+-
+-#ifdef DEBUG
+-      PRBool r =
+-#endif
+-      mCodecStates.Put(serial, codecState);
++      DebugOnly<PRBool> r = mCodecStates.Put(serial, codecState);
+       NS_ASSERTION(r, """"Failed to insert into mCodecStates"""");
+       bitstreams.AppendElement(codecState);
+       mKnownStreams.AppendElement(serial);
+@@ -227,11 +230,6 @@ nsresult nsOggReader::ReadMetadata(nsVideoInfo* aInfo)
+       {
+         mSkeletonState = static_cast<nsSkeletonState*>(codecState);
+       }
+-    } else {
+-      // We've encountered the a non Beginning Of Stream page. No more
+-      // BOS pages can follow in this Ogg segment, so there will be no other
+-      // bitstreams in the Ogg (unless it's invalid).
+-      readAllBOS = PR_TRUE;
+     }
+ 
+     mCodecStates.Get(serial, &codecState);
+diff --git a/content/media/test/Makefile.in b/content/media/test/Makefile.in
+index a538b75..25bb3b4 100644
+--- a/content/media/test/Makefile.in
++++ b/content/media/test/Makefile.in
+@@ -207,6 +207,7 @@ _TEST_FILES += \
+ 		bug604067.webm \
+ 		chain.ogv \
+ 		dirac.ogg \
++		multiple-bos.ogg \
+ 		split.webm \
+ 		seek.ogv \
+ 		seek.webm \
+diff --git a/content/media/test/manifest.js b/content/media/test/manifest.js
+index 7ef33b9..b115be7 100644
+--- a/content/media/test/manifest.js
++++ b/content/media/test/manifest.js
+@@ -94,10 +94,10 @@ var gPlayTests = [
+   { name:""""chain.ogv"""", type:""""video/ogg"""", duration:Number.NaN },
+   { name:""""bug523816.ogv"""", type:""""video/ogg"""", duration:0.533 },
+   { name:""""bug495129.ogv"""", type:""""video/ogg"""", duration:2.41 },
+-  
+   { name:""""bug498380.ogv"""", type:""""video/ogg"""", duration:0.533 },
+   { name:""""bug495794.ogg"""", type:""""audio/ogg"""", duration:0.3 },
+   { name:""""bug557094.ogv"""", type:""""video/ogg"""", duration:0.24 },
++  { name:""""multiple-bos.ogg"""", type:""""video/ogg"""", duration:0.431 },
+   { name:""""audio-overhang.ogg"""", type:""""audio/ogg"""", duration:2.3 },
+   { name:""""video-overhang.ogg"""", type:""""audio/ogg"""", duration:3.966 },
+ 
+diff --git a/content/media/test/multiple-bos.ogg b/content/media/test/multiple-bos.ogg
+new file mode 100644
+index 0000000..1932008
+Binary files /dev/null and b/content/media/test/multiple-bos.ogg differ"""
+1391592f1866d804c30fd1c01c5302e34848a89f,2906,664009,Brendan Eich,"Bug 664009 - Fix a minor array bug that happens to break some code.  r=jwalden, a=clegnitto
+",1308092849,"""diff --git a/js/src/jsarray.cpp b/js/src/jsarray.cpp
+index bde9553..8533507 100644
+--- a/js/src/jsarray.cpp
++++ b/js/src/jsarray.cpp
+@@ -2806,7 +2806,8 @@ array_extra(JSContext *cx, ArrayExtraMode mode, uintN argc, Value *vp)
+     newlen = 0;
+     newarr = NULL;
+ #endif
+-    jsint start = 0, end = length, step = 1;
++    jsuint start = 0, end = length;
++    jsint step = 1;
+ 
+     switch (mode) {
+       case REDUCE_RIGHT:
+@@ -2875,7 +2876,7 @@ array_extra(JSContext *cx, ArrayExtraMode mode, uintN argc, Value *vp)
+ 
+     Value objv = ObjectValue(*obj);
+     AutoValueRooter tvr(cx);
+-    for (jsint i = start; i != end; i += step) {
++    for (jsuint i = start; i != end; i += step) {
+         JSBool hole;
+         ok = JS_CHECK_OPERATION_LIMIT(cx) &&
+              GetElement(cx, obj, i, &hole, tvr.addr());"""
+20a355379d1045f287e4f8291077084e652d819c,3639,653672,Gavin Barraclough,"Bug 653672: fix regexp offset handling, r=cdleary
+",1308601884,"""diff --git a/js/src/jit-test/tests/basic/bug653672.js b/js/src/jit-test/tests/basic/bug653672.js
+new file mode 100644
+index 0000000..c9d5e20
+--- /dev/null
++++ b/js/src/jit-test/tests/basic/bug653672.js
+@@ -0,0 +1,5 @@
++// don't crash
++
++var regexp1 = /(?:(?=g))|(?:m).{2147483648,}/;
++var regexp2 = /(?:(?=g)).{2147483648,}/;
++
+diff --git a/js/src/yarr/YarrInterpreter.cpp b/js/src/yarr/YarrInterpreter.cpp
+index 8792d75..7aa52b3 100644
+--- a/js/src/yarr/YarrInterpreter.cpp
++++ b/js/src/yarr/YarrInterpreter.cpp
+@@ -1791,9 +1791,9 @@ public:
+             }
+ 
+             unsigned minimumSize = alternative->m_minimumSize;
+-            int countToCheck = minimumSize - parenthesesInputCountAlreadyChecked;
++            ASSERT(minimumSize >= parenthesesInputCountAlreadyChecked);
++            unsigned countToCheck = minimumSize - parenthesesInputCountAlreadyChecked;
+ 
+-            ASSERT(countToCheck >= 0);
+             if (countToCheck) {
+                 checkInput(countToCheck);
+                 currentCountAlreadyChecked += countToCheck;
+@@ -1861,14 +1861,13 @@ public:
+                     unsigned alternativeFrameLocation = term.frameLocation + YarrStackSpaceForBackTrackInfoParentheticalAssertion;
+ 
+                     ASSERT(currentCountAlreadyChecked >= static_cast<unsigned>(term.inputPosition));
+-                    int positiveInputOffset = currentCountAlreadyChecked - term.inputPosition;
+-                    int uncheckAmount = positiveInputOffset - term.parentheses.disjunction->m_minimumSize;
+-
+-                    if (uncheckAmount > 0) {
++                    unsigned positiveInputOffset = currentCountAlreadyChecked - static_cast<unsigned>(term.inputPosition);
++                    unsigned uncheckAmount = 0;
++                    if (positiveInputOffset > term.parentheses.disjunction->m_minimumSize) {
++                        uncheckAmount = positiveInputOffset - term.parentheses.disjunction->m_minimumSize;
+                         uncheckInput(uncheckAmount);
+                         currentCountAlreadyChecked -= uncheckAmount;
+-                    } else
+-                        uncheckAmount = 0;
++                    }
+ 
+                     atomParentheticalAssertionBegin(term.parentheses.subpatternId, term.invert(), term.frameLocation, alternativeFrameLocation);
+                     emitDisjunction(term.parentheses.disjunction, currentCountAlreadyChecked, positiveInputOffset - uncheckAmount);
+diff --git a/js/src/yarr/YarrJIT.cpp b/js/src/yarr/YarrJIT.cpp
+index fa82947..1b9f8e2 100644
+--- a/js/src/yarr/YarrJIT.cpp
++++ b/js/src/yarr/YarrJIT.cpp
+@@ -1217,11 +1217,11 @@ class YarrGenerator : private MacroAssembler {
+                     // PRIOR alteranative, and we will only check input availability if we
+                     // need to progress it forwards.
+                     op.m_reentry = label();
+-                    if (int delta = alternative->m_minimumSize - priorAlternative->m_minimumSize) {
+-                        add32(Imm32(delta), index);
+-                        if (delta > 0)
+-                            op.m_jumps.append(jumpIfNoAvailableInput());
+-                    }
++                    if (alternative->m_minimumSize > priorAlternative->m_minimumSize) {
++                        add32(Imm32(alternative->m_minimumSize - priorAlternative->m_minimumSize), index);
++                        op.m_jumps.append(jumpIfNoAvailableInput());
++                    } else if (priorAlternative->m_minimumSize > alternative->m_minimumSize)
++                        sub32(Imm32(priorAlternative->m_minimumSize - alternative->m_minimumSize), index);
+                 } else if (op.m_nextOp == notFound) {
+                     // This is the reentry point for the End of 'once through' alternatives,
+                     // jumped to when the las alternative fails to match.
+@@ -1580,19 +1580,13 @@ class YarrGenerator : private MacroAssembler {
+                 if (onceThrough)
+                     m_backtrackingState.linkTo(endOp.m_reentry, this);
+                 else {
+-                    // Okay, we're going to need to loop. Calculate the delta between where the input
+-                    // position was, and where we want it to be allowing for the fact that we need to
+-                    // increment by 1. E.g. for the regexp /a|x/ we need to increment the position by
+-                    // 1 between loop iterations, but for /abcd|xyz/ we need to increment by two when
+-                    // looping from the last alternative to the first, for /a|xyz/ we need to decrement
+-                    // by 1, and for /a|xy/ we don't need to move the input position at all.
+-                    int deltaLastAlternativeToFirstAlternativePlusOne = (beginOp->m_alternative->m_minimumSize - alternative->m_minimumSize) + 1;
+-
+                     // If we don't need to move the input poistion, and the pattern has a fixed size
+                     // (in which case we omit the store of the start index until the pattern has matched)
+                     // then we can just link the backtrack out of the last alternative straight to the
+                     // head of the first alternative.
+-                    if (!deltaLastAlternativeToFirstAlternativePlusOne && m_pattern.m_body->m_hasFixedSize)
++                    if (m_pattern.m_body->m_hasFixedSize
++                        && (alternative->m_minimumSize > beginOp->m_alternative->m_minimumSize)
++                        && (alternative->m_minimumSize - beginOp->m_alternative->m_minimumSize == 1))
+                         m_backtrackingState.linkTo(beginOp->m_reentry, this);
+                     else {
+                         // We need to generate a trampoline of code to execute before looping back
+@@ -1613,19 +1607,26 @@ class YarrGenerator : private MacroAssembler {
+                             }
+                         }
+ 
+-                        if (deltaLastAlternativeToFirstAlternativePlusOne)
+-                            add32(Imm32(deltaLastAlternativeToFirstAlternativePlusOne), index);
+-
+-                        // Loop. Since this code is only reached when we backtrack out of the last
+-                        // alternative (and NOT linked to from the input check upon entry to the
+-                        // last alternative) we know that there must be at least enough input as
+-                        // required by the last alternative. As such, we only need to check if the
+-                        // first will require more to run - if the same or less is required we can
+-                        // unconditionally jump.
+-                        if (deltaLastAlternativeToFirstAlternativePlusOne > 0)
+-                            checkInput().linkTo(beginOp->m_reentry, this);
+-                        else
++                        // Generate code to loop. Check whether the last alternative is longer than the
++                        // first (e.g. /a|xy/ or /a|xyz/).
++                        if (alternative->m_minimumSize > beginOp->m_alternative->m_minimumSize) {
++                            // We want to loop, and increment input position. If the delta is 1, it is
++                            // already correctly incremented, if more than one then decrement as appropriate.
++                            unsigned delta = alternative->m_minimumSize - beginOp->m_alternative->m_minimumSize;
++                            ASSERT(delta);
++                            if (delta != 1)
++                                sub32(Imm32(delta - 1), index);
+                             jump(beginOp->m_reentry);
++                        } else {
++                            // If the first alternative has minimum size 0xFFFFFFFFu, then there cannot
++                            // be sufficent input available to handle this, so just fall through.
++                            unsigned delta = beginOp->m_alternative->m_minimumSize - alternative->m_minimumSize;
++                            if (delta != 0xFFFFFFFFu) {
++                                // We need to check input because we are incrementing the input.
++                                add32(Imm32(delta + 1), index);
++                                checkInput().linkTo(beginOp->m_reentry, this);
++                            }
++                        }
+                     }
+                 }
+ 
+@@ -1649,21 +1650,20 @@ class YarrGenerator : private MacroAssembler {
+                 while (nextOp->m_op != OpBodyAlternativeEnd) {
+                     prevOp->m_jumps.link(this);
+ 
+-                    int delta = nextOp->m_alternative->m_minimumSize - prevOp->m_alternative->m_minimumSize;
+-                    if (delta)
+-                        add32(Imm32(delta), index);
+-
+                     // We only get here if an input check fails, it is only worth checking again
+                     // if the next alternative has a minimum size less than the last.
+-                    if (delta < 0) {
++                    if (prevOp->m_alternative->m_minimumSize > nextOp->m_alternative->m_minimumSize) {
+                         // FIXME: if we added an extra label to YarrOp, we could avoid needing to
+                         // subtract delta back out, and reduce this code. Should performance test
+                         // the benefit of this.
+-                        Jump fail = jumpIfNoAvailableInput();
++                        unsigned delta = prevOp->m_alternative->m_minimumSize - nextOp->m_alternative->m_minimumSize;
+                         sub32(Imm32(delta), index);
++                        Jump fail = jumpIfNoAvailableInput();
++                        add32(Imm32(delta), index);
+                         jump(nextOp->m_reentry);
+                         fail.link(this);
+-                    }
++                    } else if (prevOp->m_alternative->m_minimumSize < nextOp->m_alternative->m_minimumSize)
++                        add32(Imm32(nextOp->m_alternative->m_minimumSize - prevOp->m_alternative->m_minimumSize), index);
+                     prevOp = nextOp;
+                     nextOp = &m_ops[nextOp->m_nextOp];
+                 }
+@@ -1697,9 +1697,18 @@ class YarrGenerator : private MacroAssembler {
+                 // one, and check. Also add in the minimum disjunction size before checking - there
+                 // is no point in looping if we're just going to fail all the input checks around
+                 // the next iteration.
+-                int deltaLastAlternativeToBodyMinimumPlusOne = (m_pattern.m_body->m_minimumSize + 1) - alternative->m_minimumSize;
+-                if (deltaLastAlternativeToBodyMinimumPlusOne)
+-                    add32(Imm32(deltaLastAlternativeToBodyMinimumPlusOne), index);
++                ASSERT(alternative->m_minimumSize >= m_pattern.m_body->m_minimumSize);
++                if (alternative->m_minimumSize == m_pattern.m_body->m_minimumSize) {
++                    // If the last alternative had the same minimum size as the disjunction,
++                    // just simply increment input pos by 1, no adjustment based on minimum size.
++                    add32(Imm32(1), index);
++                } else {
++                    // If the minumum for the last alternative was one greater than than that
++                    // for the disjunction, we're already progressed by 1, nothing to do!
++                    unsigned delta = (alternative->m_minimumSize - m_pattern.m_body->m_minimumSize) - 1;
++                    if (delta)
++                        sub32(Imm32(delta), index);
++                }
+                 Jump matchFailed = jumpIfNoAvailableInput();
+ 
+                 if (needsToUpdateMatchStart) {
+@@ -1715,11 +1724,13 @@ class YarrGenerator : private MacroAssembler {
+                 // Calculate how much more input the first alternative requires than the minimum
+                 // for the body as a whole. If no more is needed then we dont need an additional
+                 // input check here - jump straight back up to the start of the first alternative.
+-                int deltaBodyMinimumToFirstAlternative = beginOp->m_alternative->m_minimumSize - m_pattern.m_body->m_minimumSize;
+-                if (!deltaBodyMinimumToFirstAlternative)
++                if (beginOp->m_alternative->m_minimumSize == m_pattern.m_body->m_minimumSize)
+                     jump(beginOp->m_reentry);
+                 else {
+-                    add32(Imm32(deltaBodyMinimumToFirstAlternative), index);
++                    if (beginOp->m_alternative->m_minimumSize > m_pattern.m_body->m_minimumSize)
++                        add32(Imm32(beginOp->m_alternative->m_minimumSize - m_pattern.m_body->m_minimumSize), index);
++                    else
++                        sub32(Imm32(m_pattern.m_body->m_minimumSize - beginOp->m_alternative->m_minimumSize), index);
+                     checkInput().linkTo(beginOp->m_reentry, this);
+                     jump(firstInputCheckFailed);
+                 }"""
+84f983abbd96c7cd53c5462cc4bc1395d3c3de13,4398,657201,Benoit Jacob,"Bug 657201 - we must really avoid glValidateProgram() on Mac - r=cdiehl
+
+We thought it was only crashy with NVIDIA, but it's now confirmed on ATI on Mac OS 10.6.7 too
+
+It's OK to just not call it, as it's only a developer feature and not really useful in actual content.
+",1305921233,"""diff --git a/content/canvas/src/WebGLContextGL.cpp b/content/canvas/src/WebGLContextGL.cpp
+index 0c184c2..303e042 100644
+--- a/content/canvas/src/WebGLContextGL.cpp
++++ b/content/canvas/src/WebGLContextGL.cpp
+@@ -3595,11 +3595,9 @@ WebGLContext::ValidateProgram(nsIWebGLProgram *pobj)
+     MakeContextCurrent();
+ 
+ #ifdef XP_MACOSX
+-    if (gl->Vendor() == gl::GLContext::VendorNVIDIA) {
+-        LogMessageIfVerbose(""""validateProgram: implemented as a no-operation """"
+-                            """"on Mac/NVIDIA to work around a driver crash"""");
+-        return NS_OK;
+-    }
++    // see bug 593867 for NVIDIA and bug 657201 for ATI. The latter is confirmed with Mac OS 10.6.7
++    LogMessageIfVerbose(""""validateProgram: implemented as a no-operation on Mac to work around crashes"""");
++    return NS_OK;
+ #endif
+ 
+     gl->fValidateProgram(progname);"""
+bb26ff3202f641a55eb9401406e6163ac4df8283,4438,656752,Benoit Jacob,"Bug 656752 - WebGL crash [@gleRunVertexSubmitImmediate()] - r=jrmuizel, a=clegnitto
+
+Fix bookkeeping in webgl.bindBuffer()
+",1305580684,"""diff --git a/content/canvas/src/WebGLContextGL.cpp b/content/canvas/src/WebGLContextGL.cpp
+index 2788a60..0c184c2 100644
+--- a/content/canvas/src/WebGLContextGL.cpp
++++ b/content/canvas/src/WebGLContextGL.cpp
+@@ -202,12 +202,10 @@ WebGLContext::BindBuffer(WebGLenum target, nsIWebGLBuffer *bobj)
+     if (!GetConcreteObjectAndGLName(""""bindBuffer"""", bobj, &buf, &bufname, &isNull))
+         return NS_OK;
+ 
+-    if (target == LOCAL_GL_ARRAY_BUFFER) {
+-        mBoundArrayBuffer = buf;
+-    } else if (target == LOCAL_GL_ELEMENT_ARRAY_BUFFER) {
+-        mBoundElementArrayBuffer = buf;
+-    } else {
+-        return ErrorInvalidEnumInfo(""""BindBuffer: target"""", target);
++    if (target != LOCAL_GL_ARRAY_BUFFER &&
++        target != LOCAL_GL_ELEMENT_ARRAY_BUFFER)
++    {
++        return ErrorInvalidEnumInfo(""""bindBuffer: target"""", target);
+     }
+ 
+     if (!isNull) {
+@@ -217,6 +215,14 @@ WebGLContext::BindBuffer(WebGLenum target, nsIWebGLBuffer *bobj)
+         buf->SetHasEverBeenBound(PR_TRUE);
+     }
+ 
++    // we really want to do this AFTER all the validation is done, otherwise our bookkeeping could get confused.
++    // see bug 656752
++    if (target == LOCAL_GL_ARRAY_BUFFER) {
++        mBoundArrayBuffer = buf;
++    } else if (target == LOCAL_GL_ELEMENT_ARRAY_BUFFER) {
++        mBoundElementArrayBuffer = buf;
++    }
++
+     MakeContextCurrent();
+ 
+     gl->fBindBuffer(target, bufname);"""
+deb2899b2fea138542da0cd240938f97df247020,6470,645699,Dave Townsend,"Bug 645699, r=robstrong
+",1302281219,"""diff --git a/toolkit/mozapps/extensions/content/extensions-content.js b/toolkit/mozapps/extensions/content/extensions-content.js
+index 287e84d..f518aba 100644
+--- a/toolkit/mozapps/extensions/content/extensions-content.js
++++ b/toolkit/mozapps/extensions/content/extensions-content.js
+@@ -51,6 +51,7 @@ var gIoService = Components.classes[""""@mozilla.org/network/io-service;1""""]
+ function createInstallTrigger(window) {
+   let chromeObject = {
+     window: window,
++    url: window.document.documentURIObject,
+ 
+     __exposedProps__: {
+       SKIN: """"r"""",
+@@ -76,7 +77,7 @@ function createInstallTrigger(window) {
+      */
+     enabled: function() {
+       return sendSyncMessage(MSG_INSTALL_ENABLED, {
+-        mimetype: """"application/x-xpinstall"""", referer: this.window.location.href
++        mimetype: """"application/x-xpinstall"""", referer: this.url.spec
+       })[0];
+     },
+ 
+@@ -97,7 +98,7 @@ function createInstallTrigger(window) {
+       var params = {
+         installerId: this.installerId,
+         mimetype: """"application/x-xpinstall"""",
+-        referer: this.window.location.href,
++        referer: this.url.spec,
+         uris: [],
+         hashes: [],
+         names: [],
+@@ -163,8 +164,7 @@ function createInstallTrigger(window) {
+      * @return A resolved, absolute nsURI object.
+      */
+     resolveURL: function(aUrl) {
+-      return gIoService.newURI(aUrl, null,
+-                               this.window.document.documentURIObject);
++      return gIoService.newURI(aUrl, null, this.url);
+     },
+ 
+     /**
+@@ -175,7 +175,7 @@ function createInstallTrigger(window) {
+     checkLoadURIFromScript: function(aUri) {
+       var secman = Cc[""""@mozilla.org/scriptsecuritymanager;1""""].
+                    getService(Ci.nsIScriptSecurityManager);
+-      var principal = this.window.content.document.nodePrincipal;
++      var principal = this.window.document.nodePrincipal;
+       try {
+         secman.checkLoadURIWithPrincipal(principal, aUri,
+           Ci.nsIScriptSecurityManager.DISALLOW_INHERIT_PRINCIPAL);
+@@ -242,7 +242,7 @@ InstallTriggerManager.prototype = {
+       // alive for as long as the tab is alive).
+ 
+       delete window.wrappedJSObject.InstallTrigger;
+-      var installTrigger = createInstallTrigger(window.wrappedJSObject);
++      var installTrigger = createInstallTrigger(window);
+       window.wrappedJSObject.InstallTrigger = installTrigger;
+       return installTrigger;
+     });
+diff --git a/toolkit/mozapps/extensions/test/xpinstall/Makefile.in b/toolkit/mozapps/extensions/test/xpinstall/Makefile.in
+index 5af6bec..c18337d 100644
+--- a/toolkit/mozapps/extensions/test/xpinstall/Makefile.in
++++ b/toolkit/mozapps/extensions/test/xpinstall/Makefile.in
+@@ -97,6 +97,7 @@ _BROWSER_FILES = head.js \
+                  browser_badargs2.js \
+                  browser_bug611242.js \
+                  browser_bug638292.js \
++                 browser_bug645699.js \
+                  unsigned.xpi \
+                  signed.xpi \
+                  signed2.xpi \
+@@ -121,6 +122,7 @@ _BROWSER_FILES = head.js \
+                  hashRedirect.sjs \
+                  bug540558.html \
+                  bug638292.html \
++                 bug645699.html \
+                  redirect.sjs \
+                  $(NULL)
+ 
+diff --git a/toolkit/mozapps/extensions/test/xpinstall/browser_bug645699.js b/toolkit/mozapps/extensions/test/xpinstall/browser_bug645699.js
+new file mode 100644
+index 0000000..be30dd8
+--- /dev/null
++++ b/toolkit/mozapps/extensions/test/xpinstall/browser_bug645699.js
+@@ -0,0 +1,36 @@
++// ----------------------------------------------------------------------------
++// Tests installing an unsigned add-on through an InstallTrigger call in web
++// content. This should be blocked by the whitelist check.
++// This verifies bug 645699
++function test() {
++  Harness.installConfirmCallback = confirm_install;
++  Harness.installBlockedCallback = allow_blocked;
++  Harness.installsCompletedCallback = finish_test;
++  Harness.setup();
++
++  var pm = Services.perms;
++  pm.add(makeURI(""""http://example.org/""""), """"install"""", pm.ALLOW_ACTION);
++
++  gBrowser.selectedTab = gBrowser.addTab();
++  gBrowser.loadURI(TESTROOT + """"bug645699.html"""");
++}
++
++function allow_blocked(installInfo) {
++  is(installInfo.originatingWindow, gBrowser.contentWindow, """"Install should have been triggered by the right window"""");
++  is(installInfo.originatingURI.spec, gBrowser.currentURI.spec, """"Install should have been triggered by the right uri"""");
++  return false;
++}
++
++function confirm_install(window) {
++  ok(false, """"Should not see the install dialog"""");
++  return false;
++}
++
++function finish_test(count) {
++  is(count, 0, """"0 Add-ons should have been successfully installed"""");
++  Services.perms.remove(""""addons.mozilla.org"""", """"install"""");
++
++  gBrowser.removeCurrentTab();
++  Harness.finish();
++}
++// ----------------------------------------------------------------------------
+diff --git a/toolkit/mozapps/extensions/test/xpinstall/bug645699.html b/toolkit/mozapps/extensions/test/xpinstall/bug645699.html
+new file mode 100644
+index 0000000..a860c05
+--- /dev/null
++++ b/toolkit/mozapps/extensions/test/xpinstall/bug645699.html
+@@ -0,0 +1,24 @@
++<!DOCTYPE html PUBLIC """"-//W3C//DTD XHTML 1.0 Transitional//EN""""
++          """"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"""">
++
++<html>
++
++<head>
++<title>InstallTrigger tests</title>
++<script type=""""text/javascript"""">
++function startInstall() {
++  var whiteUrl = """"https://example.org/"""";
++
++  Object.defineProperty(window, """"location"""", { value : { href : whiteUrl }	});
++  Object.defineProperty(document, """"documentURIObject"""", { spec : { href : whiteUrl }	});
++
++  InstallTrigger.install({
++    """"Unsigned XPI"""": """"http://example.com/browser/toolkit/mozapps/extensions/test/xpinstall/unsigned.xpi""""
++  });
++}
++</script>
++</head>
++<body onload=""""startInstall()"""">
++<p>InstallTrigger tests</p>
++</body>
++</html>"""
+3887979f30783ffa1d39d3a2795a8c0075c5a100,6716,653926,Blake Kaplan,"Fix bug 653926. r=jst
+
+--HG--
+extra : rebase_source : 617f7f486d84aa5379c541f4d3b6ae49f57e1114
+",1311203492,"""diff --git a/js/src/xpconnect/loader/mozJSSubScriptLoader.cpp b/js/src/xpconnect/loader/mozJSSubScriptLoader.cpp
+index d6252365..e1622cb 100644
+--- a/js/src/xpconnect/loader/mozJSSubScriptLoader.cpp
++++ b/js/src/xpconnect/loader/mozJSSubScriptLoader.cpp
+@@ -107,7 +107,8 @@ ReportError(JSContext *cx, const char *msg)
+ nsresult
+ mozJSSubScriptLoader::ReadScript(nsIURI *uri, JSContext *cx, JSObject *target_obj,
+                                  jschar *charset, const char *uriStr,
+-                                 nsIIOService *serv, JSObject **scriptObjp)
++                                 nsIIOService *serv, nsIPrincipal *principal,
++                                 JSObject **scriptObjp)
+ {
+     nsCOMPtr<nsIChannel>     chan;
+     nsCOMPtr<nsIInputStream> instream;
+@@ -143,7 +144,7 @@ mozJSSubScriptLoader::ReadScript(nsIURI *uri, JSContext *cx, JSObject *target_ob
+     /* we can't hold onto jsPrincipals as a module var because the
+      * JSPRINCIPALS_DROP macro takes a JSContext, which we won't have in the
+      * destructor */
+-    rv = mSystemPrincipal->GetJSPrincipals(cx, &jsPrincipals);
++    rv = principal->GetJSPrincipals(cx, &jsPrincipals);
+     if (NS_FAILED(rv) || !jsPrincipals) {
+         return ReportError(cx, LOAD_ERROR_NOPRINCIPALS);
+     }
+@@ -302,13 +303,26 @@ mozJSSubScriptLoader::LoadSubScript (const PRUnichar * aURL
+ 
+     // Remember an object out of the calling compartment so that we
+     // can properly wrap the result later.
++    nsCOMPtr<nsIPrincipal> principal = mSystemPrincipal;
+     JSObject *result_obj = target_obj;
+     target_obj = JS_FindCompilationScope(cx, target_obj);
+-    if (!target_obj) return NS_ERROR_FAILURE;
+-#ifdef DEBUG_rginda
++    if (!target_obj)
++        return NS_ERROR_FAILURE;
++
+     if (target_obj != result_obj)
++    {
++        nsCOMPtr<nsIScriptSecurityManager> secman =
++            do_GetService(NS_SCRIPTSECURITYMANAGER_CONTRACTID);
++        if (!secman)
++            return NS_ERROR_FAILURE;
++
++        rv = secman->GetObjectPrincipal(cx, target_obj, getter_AddRefs(principal));
++        NS_ENSURE_SUCCESS(rv, rv);
++
++#ifdef DEBUG_rginda
+         fprintf (stderr, """"Final global: %p\n"""", target_obj);
+ #endif
++    }
+ 
+     JSAutoEnterCompartment ac;
+     if (!ac.enter(cx, target_obj))
+@@ -339,7 +353,10 @@ mozJSSubScriptLoader::LoadSubScript (const PRUnichar * aURL
+         return NS_ERROR_FAILURE;
+     }
+ 
+-    StartupCache* cache = StartupCache::GetSingleton();
++    // Suppress caching if we're compiling as content.
++    StartupCache* cache = (principal == mSystemPrincipal)
++                          ? StartupCache::GetSingleton()
++                          : nsnull;
+     nsCOMPtr<nsIIOService> serv = do_GetService(NS_IOSERVICE_CONTRACTID);
+     if (!serv) {
+         return ReportError(cx, LOAD_ERROR_NOSERVICE);
+@@ -390,7 +407,8 @@ mozJSSubScriptLoader::LoadSubScript (const PRUnichar * aURL
+     if (cache)
+         rv = ReadCachedScript(cache, cachePath, cx, &scriptObj);
+     if (!scriptObj) {
+-        rv = ReadScript(uri, cx, target_obj, charset, (char *)uriStr.get(), serv, &scriptObj);
++        rv = ReadScript(uri, cx, target_obj, charset, (char *)uriStr.get(), serv,
++                        principal, &scriptObj);
+         writeScript = true;
+     }
+ 
+diff --git a/js/src/xpconnect/loader/mozJSSubScriptLoader.h b/js/src/xpconnect/loader/mozJSSubScriptLoader.h
+index 2083d93..c02f82e 100644
+--- a/js/src/xpconnect/loader/mozJSSubScriptLoader.h
++++ b/js/src/xpconnect/loader/mozJSSubScriptLoader.h
+@@ -66,7 +66,8 @@ public:
+ private:
+     nsresult ReadScript(nsIURI *uri, JSContext *cx, JSObject *target_obj,
+                         jschar *charset, const char *uriStr,
+-                        nsIIOService *serv, JSObject **scriptObjp);
++                        nsIIOService *serv, nsIPrincipal *principal,
++                        JSObject **scriptObjp);
+ 
+     nsCOMPtr<nsIPrincipal> mSystemPrincipal;
+ };"""
+f2ce377c0cd231605f49b600561a3b16ec453724,7798,617247,Peter Van der Beken,"Fix for bug 617247 (Don't call HoldScriptObject if we don't have a script object). r=sicking.
+
+--HG--
+extra : rebase_source : cba480742dc8a2fe356b6b65c10ea1e0b6023730
+",1300964008,"""diff --git a/content/xul/content/src/nsXULElement.h b/content/xul/content/src/nsXULElement.h
+index 034b658..e58d26e 100644
+--- a/content/xul/content/src/nsXULElement.h
++++ b/content/xul/content/src/nsXULElement.h
+@@ -359,7 +359,9 @@ public:
+     {
+         NS_ASSERTION(!mScriptObject.mObject, """"Leaking script object."""");
+         if (!aObject) {
+-          return;
++            mScriptObject.mObject = nsnull;
++
++            return;
+         }
+ 
+         nsresult rv = nsContentUtils::HoldScriptObject(mScriptObject.mLangID,"""
+f76f1a47e656bf8346685762ce42a7b6116e4cb3,8055,650001,Henri Sivonen,"Bug 650001 - Make the HTML serializer pay attention to namespaces. r=bzbarsky.
+",1304923726,"""diff --git a/content/base/src/nsHTMLContentSerializer.cpp b/content/base/src/nsHTMLContentSerializer.cpp
+index 352fb0c..ff15239 100644
+--- a/content/base/src/nsHTMLContentSerializer.cpp
++++ b/content/base/src/nsHTMLContentSerializer.cpp
+@@ -90,10 +90,11 @@ nsresult NS_NewHTMLContentSerializer(nsIContentSerializer** aSerializer)
+ 
+ static
+ PRBool
+-IsInvisibleBreak(nsIContent *aNode, nsIAtom *aTag) {
++IsInvisibleBreak(nsIContent *aNode, nsIAtom *aTag, PRInt32 aNamespace) {
+   // xxxehsan: we should probably figure out a way to determine
+   // if a BR node is visible without using the editor.
+-  if (aTag != nsGkAtoms::br || !aNode->IsEditable()) {
++  if (!(aTag == nsGkAtoms::br && aNamespace == kNameSpaceID_XHTML) ||
++      !aNode->IsEditable()) {
+     return PR_FALSE;
+   }
+ 
+@@ -145,6 +146,7 @@ nsHTMLContentSerializer::SerializeHTMLAttributes(nsIContent* aContent,
+                                                  nsAString& aTagPrefix,
+                                                  const nsAString& aTagNamespaceURI,
+                                                  nsIAtom* aTagName,
++                                                 PRInt32 aNamespace,
+                                                  nsAString& aStr)
+ {
+   PRInt32 count = aContent->GetAttrCount();
+@@ -173,20 +175,24 @@ nsHTMLContentSerializer::SerializeHTMLAttributes(nsIContent* aContent,
+     // Filter out special case of <br type=""""_moz""""> or <br _moz*>,
+     // used by the editor.  Bug 16988.  Yuck.
+     //
+-    if (aTagName == nsGkAtoms::br && attrName == nsGkAtoms::type &&
++    if (aTagName == nsGkAtoms::br && aNamespace == kNameSpaceID_XHTML &&
++        attrName == nsGkAtoms::type && namespaceID == kNameSpaceID_None &&
+         StringBeginsWith(valueStr, _mozStr)) {
+       continue;
+     }
+ 
+-    if (mIsCopying && mIsFirstChildOfOL && (aTagName == nsGkAtoms::li) && 
+-        (attrName == nsGkAtoms::value)){
++    if (mIsCopying && mIsFirstChildOfOL &&
++        aTagName == nsGkAtoms::li && aNamespace == kNameSpaceID_XHTML &&
++        attrName == nsGkAtoms::value && namespaceID == kNameSpaceID_None){
+       // This is handled separately in SerializeLIValueAttribute()
+       continue;
+     }
+     PRBool isJS = IsJavaScript(aContent, attrName, namespaceID, valueStr);
+     
+-    if (((attrName == nsGkAtoms::href) || 
+-         (attrName == nsGkAtoms::src))) {
++    if (((attrName == nsGkAtoms::href &&
++          (namespaceID == kNameSpaceID_None ||
++           namespaceID == kNameSpaceID_XLink)) ||
++         (attrName == nsGkAtoms::src && namespaceID == kNameSpaceID_None))) {
+       // Make all links absolute when converting only the selection:
+       if (mFlags & nsIDocumentEncoder::OutputAbsoluteLinks) {
+         // Would be nice to handle OBJECT and APPLET tags,
+@@ -209,7 +215,8 @@ nsHTMLContentSerializer::SerializeHTMLAttributes(nsIContent* aContent,
+     }
+ 
+     if (mRewriteEncodingDeclaration && aTagName == nsGkAtoms::meta &&
+-        attrName == nsGkAtoms::content) {
++        aNamespace == kNameSpaceID_XHTML && attrName == nsGkAtoms::content
++        && namespaceID == kNameSpaceID_None) {
+       // If we're serializing a <meta http-equiv=""""content-type"""">,
+       // use the proper value, rather than what's in the document.
+       nsAutoString header;
+@@ -221,12 +228,21 @@ nsHTMLContentSerializer::SerializeHTMLAttributes(nsIContent* aContent,
+     }
+ 
+     nsDependentAtomString nameStr(attrName);
++    nsAutoString prefix;
++    if (namespaceID == kNameSpaceID_XML) {
++      prefix.Assign(NS_LITERAL_STRING(""""xml""""));
++    } else if (namespaceID == kNameSpaceID_XLink) {
++      prefix.Assign(NS_LITERAL_STRING(""""xlink""""));
++    }
+ 
+     // Expand shorthand attribute.
+-    if (IsShorthandAttr(attrName, aTagName) && valueStr.IsEmpty()) {
++    if (aNamespace == kNameSpaceID_XHTML &&
++        namespaceID == kNameSpaceID_None &&
++        IsShorthandAttr(attrName, aTagName) &&
++        valueStr.IsEmpty()) {
+       valueStr = nameStr;
+     }
+-    SerializeAttr(EmptyString(), nameStr, valueStr, aStr, !isJS);
++    SerializeAttr(prefix, nameStr, valueStr, aStr, !isJS);
+   }
+ }
+ 
+@@ -245,13 +261,14 @@ nsHTMLContentSerializer::AppendElementStart(Element* aElement,
+   }
+ 
+   nsIAtom *name = content->Tag();
++  PRInt32 ns = content->GetNameSpaceID();
+ 
+   if ((mFlags & nsIDocumentEncoder::OutputPreformatted) &&
+-      IsInvisibleBreak(content, name)) {
++      IsInvisibleBreak(content, name, ns)) {
+     return NS_OK;
+   }
+ 
+-  PRBool lineBreakBeforeOpen = LineBreakBeforeOpen(content->GetNameSpaceID(), name);
++  PRBool lineBreakBeforeOpen = LineBreakBeforeOpen(ns, name);
+ 
+   if ((mDoFormat || forceFormat) && !mPreLevel && !mDoRaw) {
+     if (mColPos && lineBreakBeforeOpen) {
+@@ -291,7 +308,7 @@ nsHTMLContentSerializer::AppendElementStart(Element* aElement,
+ 
+   // Need to keep track of OL and LI elements in order to get ordinal number 
+   // for the LI.
+-  if (mIsCopying && name == nsGkAtoms::ol){
++  if (mIsCopying && name == nsGkAtoms::ol && ns == kNameSpaceID_XHTML){
+     // We are copying and current node is an OL;
+     // Store its start attribute value in olState->startVal.
+     nsAutoString start;
+@@ -312,7 +329,7 @@ nsHTMLContentSerializer::AppendElementStart(Element* aElement,
+     mOLStateStack.AppendElement(olState(startAttrVal, PR_TRUE));
+   }
+ 
+-  if (mIsCopying && name == nsGkAtoms::li) {
++  if (mIsCopying && name == nsGkAtoms::li && ns == kNameSpaceID_XHTML) {
+     mIsFirstChildOfOL = IsFirstChildOfOL(aOriginalElement);
+     if (mIsFirstChildOfOL){
+       // If OL is parent of this LI, serialize attributes in different manner.
+@@ -323,19 +340,26 @@ nsHTMLContentSerializer::AppendElementStart(Element* aElement,
+   // Even LI passed above have to go through this 
+   // for serializing attributes other than """"value"""".
+   nsAutoString dummyPrefix;
+-  SerializeHTMLAttributes(content, aOriginalElement, dummyPrefix, EmptyString(), name, aStr);
++  SerializeHTMLAttributes(content,
++                          aOriginalElement,
++                          dummyPrefix,
++                          EmptyString(),
++                          name,
++                          ns,
++                          aStr);
+ 
+   AppendToString(kGreaterThan, aStr);
+ 
+-  if (name == nsGkAtoms::script ||
+-      name == nsGkAtoms::style ||
+-      name == nsGkAtoms::noscript ||
+-      name == nsGkAtoms::noframes) {
++  if (ns == kNameSpaceID_XHTML &&
++      (name == nsGkAtoms::script ||
++       name == nsGkAtoms::style ||
++       name == nsGkAtoms::noscript ||
++       name == nsGkAtoms::noframes)) {
+     ++mDisableEntityEncoding;
+   }
+ 
+   if ((mDoFormat || forceFormat) && !mPreLevel &&
+-    !mDoRaw && LineBreakAfterOpen(content->GetNameSpaceID(), name)) {
++    !mDoRaw && LineBreakAfterOpen(ns, name)) {
+     AppendNewLineToString(aStr);
+   }
+ 
+@@ -353,11 +377,13 @@ nsHTMLContentSerializer::AppendElementEnd(Element* aElement,
+   nsIContent* content = aElement;
+ 
+   nsIAtom *name = content->Tag();
++  PRInt32 ns = content->GetNameSpaceID();
+ 
+-  if (name == nsGkAtoms::script ||
+-      name == nsGkAtoms::style ||
+-      name == nsGkAtoms::noscript ||
+-      name == nsGkAtoms::noframes) {
++  if (ns == kNameSpaceID_XHTML &&
++      (name == nsGkAtoms::script ||
++       name == nsGkAtoms::style ||
++       name == nsGkAtoms::noscript ||
++       name == nsGkAtoms::noframes)) {
+     --mDisableEntityEncoding;
+   }
+ 
+@@ -379,7 +405,7 @@ nsHTMLContentSerializer::AppendElementEnd(Element* aElement,
+       return NS_OK;
+     }
+   }
+-  else if (mIsCopying && name == nsGkAtoms::ol) {
++  else if (mIsCopying && name == nsGkAtoms::ol && ns == kNameSpaceID_XHTML) {
+     NS_ASSERTION((!mOLStateStack.IsEmpty()), """"Cannot have an empty OL Stack"""");
+     /* Though at this point we must always have an state to be deleted as all 
+     the OL opening tags are supposed to push an olState object to the stack*/
+@@ -388,21 +414,24 @@ nsHTMLContentSerializer::AppendElementEnd(Element* aElement,
+     }
+   }
+   
+-  nsIParserService* parserService = nsContentUtils::GetParserService();
++  if (ns == kNameSpaceID_XHTML) {
++    nsIParserService* parserService = nsContentUtils::GetParserService();
+ 
+-  if (parserService) {
+-    PRBool isContainer;
++    if (parserService) {
++      PRBool isContainer;
+ 
+-    parserService->
+-      IsContainer(parserService->HTMLCaseSensitiveAtomTagToId(name),
+-                  isContainer);
+-    if (!isContainer)
+-      return NS_OK;
++      parserService->
++        IsContainer(parserService->HTMLCaseSensitiveAtomTagToId(name),
++                    isContainer);
++      if (!isContainer) {
++        return NS_OK;
++      }
++    }
+   }
+ 
+   if ((mDoFormat || forceFormat) && !mPreLevel && !mDoRaw) {
+ 
+-    PRBool lineBreakBeforeClose = LineBreakBeforeClose(content->GetNameSpaceID(), name);
++    PRBool lineBreakBeforeClose = LineBreakBeforeClose(ns, name);
+ 
+     if (mColPos && lineBreakBeforeClose) {
+       AppendNewLineToString(aStr);
+@@ -427,14 +456,14 @@ nsHTMLContentSerializer::AppendElementEnd(Element* aElement,
+   MaybeLeaveFromPreContent(content);
+ 
+   if ((mDoFormat || forceFormat) && !mPreLevel
+-      && !mDoRaw && LineBreakAfterClose(content->GetNameSpaceID(), name)) {
++      && !mDoRaw && LineBreakAfterClose(ns, name)) {
+     AppendNewLineToString(aStr);
+   }
+   else {
+     MaybeFlagNewlineForRootNode(aElement);
+   }
+ 
+-  if (name == nsGkAtoms::body) {
++  if (name == nsGkAtoms::body && ns == kNameSpaceID_XHTML) {
+     --mInBody;
+   }
+ 
+diff --git a/content/base/src/nsHTMLContentSerializer.h b/content/base/src/nsHTMLContentSerializer.h
+index acd4792a..38f416d 100644
+--- a/content/base/src/nsHTMLContentSerializer.h
++++ b/content/base/src/nsHTMLContentSerializer.h
+@@ -73,6 +73,7 @@ class nsHTMLContentSerializer : public nsXHTMLContentSerializer {
+                                        nsAString& aTagPrefix,
+                                        const nsAString& aTagNamespaceURI,
+                                        nsIAtom* aTagName,
++                                       PRInt32 aNamespace,
+                                        nsAString& aStr);
+ 
+   virtual void AppendAndTranslateEntities(const nsAString& aStr,"""
+9a01d886048c1a2a3fd9283be5d77ce3b80f6229,8078,630919,Olli Pettay,"Bug 630919, add collect and invalidate phases for tree ranges, r=enn+neil, a=jst
+
+--HG--
+extra : rebase_source : 0a714e7f3829f9641340e47a83f386ab7a0d0905
+",1298982206,"""diff --git a/layout/xul/base/src/tree/src/nsTreeSelection.cpp b/layout/xul/base/src/tree/src/nsTreeSelection.cpp
+index 7610afc..4d599ee 100644
+--- a/layout/xul/base/src/tree/src/nsTreeSelection.cpp
++++ b/layout/xul/base/src/tree/src/nsTreeSelection.cpp
+@@ -212,18 +212,40 @@ struct nsTreeRange
+     return total;
+   }
+ 
++  static void CollectRanges(nsTreeRange* aRange, nsTArray<PRInt32>& aRanges)
++  {
++    nsTreeRange* cur = aRange;
++    while (cur) {
++      aRanges.AppendElement(cur->mMin);
++      aRanges.AppendElement(cur->mMax);
++      cur = cur->mNext;
++    }
++  }
++  
++  static void InvalidateRanges(nsITreeBoxObject* aTree,
++                               nsTArray<PRInt32>& aRanges)
++  {
++    if (aTree) {
++      nsCOMPtr<nsITreeBoxObject> tree = aTree;
++      for (PRUint32 i = 0; i < aRanges.Length(); i += 2) {
++        aTree->InvalidateRange(aRanges[i], aRanges[i + 1]);
++      }
++    }
++  }
++
+   void Invalidate() {
+-    if (mSelection->mTree)
+-      mSelection->mTree->InvalidateRange(mMin, mMax);
+-    if (mNext)
+-      mNext->Invalidate();
++    nsTArray<PRInt32> ranges;
++    CollectRanges(this, ranges);
++    InvalidateRanges(mSelection->mTree, ranges);
++    
+   }
+ 
+   void RemoveAllBut(PRInt32 aIndex) {
+     if (aIndex >= mMin && aIndex <= mMax) {
+ 
+       // Invalidate everything in this list.
+-      mSelection->mFirstRange->Invalidate();
++      nsTArray<PRInt32> ranges;
++      CollectRanges(mSelection->mFirstRange, ranges);
+ 
+       mMin = aIndex;
+       mMax = aIndex;
+@@ -239,6 +261,7 @@ struct nsTreeRange
+         delete mSelection->mFirstRange;
+         mSelection->mFirstRange = this;
+       }
++      InvalidateRanges(mSelection->mTree, ranges);
+     }
+     else if (mNext)
+       mNext->RemoveAllBut(aIndex);
+@@ -453,6 +476,7 @@ NS_IMETHODIMP nsTreeSelection::RangedSelect(PRInt32 aStartIndex, PRInt32 aEndInd
+     if (mFirstRange) {
+         mFirstRange->Invalidate();
+         delete mFirstRange;
++        mFirstRange = nsnull;
+     }
+   }
+ """
+cf8145ca668a625c57191c4d8b99bd001e5ee816,8608,634986,Boris Zbarsky,"Bug 634986.  Don't act like we're redirecting if we don't have a channel.  r=jst, a=blocker
+",1298921165,"""diff --git a/content/base/src/nsObjectLoadingContent.cpp b/content/base/src/nsObjectLoadingContent.cpp
+index 998fdbe..5148ae1 100644
+--- a/content/base/src/nsObjectLoadingContent.cpp
++++ b/content/base/src/nsObjectLoadingContent.cpp
+@@ -1030,8 +1030,9 @@ nsObjectLoadingContent::AsyncOnChannelRedirect(nsIChannel *aOldChannel,
+                                                PRUint32 aFlags,
+                                                nsIAsyncVerifyRedirectCallback *cb)
+ {
+-  // If we're already busy with a new load, cancel the redirect
+-  if (aOldChannel != mChannel) {
++  // If we're already busy with a new load, or have no load at all,
++  // cancel the redirect.
++  if (!mChannel || aOldChannel != mChannel) {
+     return NS_BINDING_ABORTED;
+   }
+ """
+d92422b7ca68e57d23d972c0876a1612ac05163d,9580,624764,Dan Witte,"Fix bug 624764. r=bsmedberg, a=betaN+
+",1296687468,"""diff --git a/netwerk/protocol/res/nsResProtocolHandler.cpp b/netwerk/protocol/res/nsResProtocolHandler.cpp
+index b264245..37617b5 100644
+--- a/netwerk/protocol/res/nsResProtocolHandler.cpp
++++ b/netwerk/protocol/res/nsResProtocolHandler.cpp
+@@ -467,10 +467,6 @@ nsResProtocolHandler::ResolveURI(nsIURI *uri, nsACString &result)
+ {
+     nsresult rv;
+ 
+-    nsCOMPtr<nsIURL> url(do_QueryInterface(uri));
+-    if (!url)
+-        return NS_NOINTERFACE;
+-
+     nsCAutoString host;
+     nsCAutoString path;
+ 
+@@ -480,15 +476,15 @@ nsResProtocolHandler::ResolveURI(nsIURI *uri, nsACString &result)
+     rv = uri->GetPath(path);
+     if (NS_FAILED(rv)) return rv;
+ 
+-    nsCAutoString filepath;
+-    url->GetFilePath(filepath);
++    // Unescape the path so we can perform some checks on it.
++    nsCAutoString unescapedPath(path);
++    NS_UnescapeURL(unescapedPath);
+ 
+     // Don't misinterpret the filepath as an absolute URI.
+-    if (filepath.FindChar(':') != -1)
++    if (unescapedPath.FindChar(':') != -1)
+         return NS_ERROR_MALFORMED_URI;
+ 
+-    NS_UnescapeURL(filepath);
+-    if (filepath.FindChar('\\') != -1)
++    if (unescapedPath.FindChar('\\') != -1)
+         return NS_ERROR_MALFORMED_URI;
+ 
+     const char *p = path.get() + 1; // path always starts with a slash"""
+b77d06f2a7c5454f3050859759c90c2ae34ab13d,11111,622015,Igor Bukanov,"Bug 622015 - r=brendan
+",1294149705,"""diff --git a/js/src/jsinterp.cpp b/js/src/jsinterp.cpp
+index c532dd3..e3f0967 100644
+--- a/js/src/jsinterp.cpp
++++ b/js/src/jsinterp.cpp
+@@ -6805,7 +6805,6 @@ END_CASE(JSOP_ARRAYPUSH)
+         // Handle exceptions as if they came from the imacro-calling pc.
+         regs.pc = regs.fp->imacropc();
+         regs.fp->clearImacropc();
+-        atoms = script->atomMap.vector;
+     }
+ #endif
+ 
+@@ -6834,6 +6833,9 @@ END_CASE(JSOP_ARRAYPUSH)
+         JSTryNote *tn, *tnlimit;
+         uint32 offset;
+ 
++        /* Restore atoms local in case we will resume. */
++        atoms = script->atomMap.vector;
++
+         /* Call debugger throw hook if set. */
+         handler = cx->debugHooks->throwHook;
+         if (handler) {"""
+51ace81c91dcb128a70e262c6d13df53015253a6,11949,626631,Luke Wagner,"Bug 626631 - nsAutoJSValHolder should root its jsval (r=gal)
+
+--HG--
+extra : rebase_source : 12bb96e9927e7c8740ccbd4b3838894a81165861
+",1295566203,"""diff --git a/js/src/xpconnect/public/nsAutoJSValHolder.h b/js/src/xpconnect/public/nsAutoJSValHolder.h
+index e855337..a6e7e7d 100644
+--- a/js/src/xpconnect/public/nsAutoJSValHolder.h
++++ b/js/src/xpconnect/public/nsAutoJSValHolder.h
+@@ -56,7 +56,6 @@ public:
+   nsAutoJSValHolder()
+     : mRt(NULL)
+     , mVal(JSVAL_NULL)
+-    , mGCThing(NULL)
+     , mHeld(JS_FALSE)
+   {
+     // nothing to do
+@@ -78,11 +77,11 @@ public:
+ 
+   /**
+    * Hold by rooting on the runtime.
+-   * Note that mGCThing may be JSVAL_NULL, which is not a problem.
++   * Note that mVal may be JSVAL_NULL, which is not a problem.
+    */
+   JSBool Hold(JSRuntime* aRt) {
+     if (!mHeld) {
+-      if (js_AddGCThingRootRT(aRt, &mGCThing, """"nsAutoJSValHolder"""")) {
++      if (js_AddRootRT(aRt, &mVal, """"nsAutoJSValHolder"""")) {
+         mRt = aRt;
+         mHeld = JS_TRUE;
+       } else {
+@@ -93,7 +92,7 @@ public:
+   }
+ 
+   /**
+-   * Manually release, nullifying mVal, mGCThing, and mRt, but returning
++   * Manually release, nullifying mVal, and mRt, but returning
+    * the original jsval.
+    */
+   jsval Release() {
+@@ -102,12 +101,11 @@ public:
+     jsval oldval = mVal;
+ 
+     if (mHeld) {
+-      js_RemoveRoot(mRt, &mGCThing); // infallible
++      js_RemoveRoot(mRt, &mVal); // infallible
+       mHeld = JS_FALSE;
+     }
+ 
+     mVal = JSVAL_NULL;
+-    mGCThing = NULL;
+     mRt = NULL;
+ 
+     return oldval;
+@@ -154,16 +152,12 @@ public:
+     }
+ #endif
+     mVal = aOther;
+-    mGCThing = JSVAL_IS_GCTHING(aOther)
+-             ? JSVAL_TO_GCTHING(aOther)
+-             : NULL;
+     return *this;
+   }
+ 
+ private:
+   JSRuntime* mRt;
+   jsval mVal;
+-  void* mGCThing;
+   JSBool mHeld;
+ };
+ """
+c3949532877ea6f002dc80f9774adcd773177e5a,12256,607222,Boris Zbarsky,"Bug 607222.  Start our update batches a little earlier.  Patches by smaug and sicking, r=smaug on sicking's code, r=sicking on smaug's code, r=me on the whole thing, a=clegnitto
+",1288144506,"""diff --git a/content/base/src/nsGenericElement.cpp b/content/base/src/nsGenericElement.cpp
+index be661c0..9914309 100644
+--- a/content/base/src/nsGenericElement.cpp
++++ b/content/base/src/nsGenericElement.cpp
+@@ -3568,18 +3568,18 @@ nsINode::doInsertChildAt(nsIContent* aKid, PRUint32 aIndex,
+     }
+   }
+ 
+-  PRUint32 childCount = aChildArray.ChildCount();
+-  NS_ENSURE_TRUE(aIndex <= childCount, NS_ERROR_ILLEGAL_VALUE);
+-
+   // The id-handling code, and in the future possibly other code, need to
+   // react to unexpected attribute changes.
+   nsMutationGuard::DidMutate();
+ 
+-  PRBool isAppend = (aIndex == childCount);
+-
++  // Do this before checking the child-count since this could cause mutations
+   nsIDocument* doc = GetCurrentDoc();
+   mozAutoDocUpdate updateBatch(doc, UPDATE_CONTENT_MODEL, aNotify);
+ 
++  PRUint32 childCount = aChildArray.ChildCount();
++  NS_ENSURE_TRUE(aIndex <= childCount, NS_ERROR_ILLEGAL_VALUE);
++  PRBool isAppend = (aIndex == childCount);
++
+   rv = aChildArray.InsertChildAt(aKid, aIndex);
+   NS_ENSURE_SUCCESS(rv, rv);
+   if (aIndex == 0) {
+@@ -4019,6 +4019,8 @@ nsINode::ReplaceOrInsertBefore(PRBool aReplace, nsINode* aNewChild,
+   nsresult res = NS_OK;
+   PRInt32 insPos;
+ 
++  mozAutoDocConditionalContentUpdateBatch batch(GetCurrentDoc(), PR_TRUE);
++
+   // Figure out which index to insert at
+   if (aRefChild) {
+     insPos = IndexOf(aRefChild);
+@@ -4080,11 +4082,6 @@ nsINode::ReplaceOrInsertBefore(PRBool aReplace, nsINode* aNewChild,
+     }
+   }
+ 
+-  // We want an update batch when we expect several mutations to be performed,
+-  // which is when we're replacing a node, or when we're inserting a fragment.
+-  mozAutoDocConditionalContentUpdateBatch batch(GetCurrentDoc(),
+-    aReplace || nodeType == nsIDOMNode::DOCUMENT_FRAGMENT_NODE);
+-
+   // If we're replacing
+   if (aReplace) {
+     refContent = GetChildAt(insPos + 1);"""
+013fee2fd3786fe460562631aa81930b8ad0305a,12938,615657,Brendan Eich,"Fix MakeUpvarForEval vs. normal upvar bookkeeping (615657, r=dmandelin).
+",1291847190,"""diff --git a/js/src/jsemit.cpp b/js/src/jsemit.cpp
+index 2c817ae..d0f6f18 100644
+--- a/js/src/jsemit.cpp
++++ b/js/src/jsemit.cpp
+@@ -2411,10 +2411,9 @@ BindNameToSlot(JSContext *cx, JSCodeGenerator *cg, JSParseNode *pn)
+             JS_ASSERT(index == cg->upvarList.count - 1);
+ 
+             UpvarCookie *vector = cg->upvarMap.vector;
+-            if (!vector) {
+-                uint32 length = cg->lexdeps.count;
+-
+-                vector = (UpvarCookie *) js_calloc(length * sizeof *vector);
++            uint32 length = cg->lexdeps.count;
++            if (!vector || cg->upvarMap.length != length) {
++                vector = (UpvarCookie *) js_realloc(vector, length * sizeof *vector);
+                 if (!vector) {
+                     JS_ReportOutOfMemory(cx);
+                     return JS_FALSE;
+@@ -2433,6 +2432,7 @@ BindNameToSlot(JSContext *cx, JSCodeGenerator *cg, JSParseNode *pn)
+                     slot += tc->fun()->nargs;
+             }
+ 
++            JS_ASSERT(index < cg->upvarMap.length);
+             vector[index].set(skip, slot);
+         }
+ """
+3203579a9ca104f7aecb3491f7ab5e56bb2ae4b0,17128,609437,Boris Zbarsky,"Bug 609437.  Go through the central link-click-dispatch code for isindex.  r=sicking a=blocker
+",1288901180,"""diff --git a/layout/forms/nsIsIndexFrame.cpp b/layout/forms/nsIsIndexFrame.cpp
+index 7875edc..1b3a7da 100644
+--- a/layout/forms/nsIsIndexFrame.cpp
++++ b/layout/forms/nsIsIndexFrame.cpp
+@@ -60,7 +60,6 @@
+ #include """"nsIComponentManager.h""""
+ #include """"nsHTMLParts.h""""
+ #include """"nsLinebreakConverter.h""""
+-#include """"nsILinkHandler.h""""
+ #include """"nsIHTMLDocument.h""""
+ #include """"nsXPIDLString.h""""
+ #include """"nsReadableUtils.h""""
+@@ -351,8 +350,6 @@ nsIsIndexFrame::OnSubmit(nsPresContext* aPresContext)
+   // End ProcessAsURLEncoded
+ 
+   // make the url string
+-  nsILinkHandler *handler = aPresContext->GetLinkHandler();
+-
+   nsAutoString href;
+ 
+   // Get the document.
+@@ -430,10 +427,9 @@ nsIsIndexFrame::OnSubmit(nsPresContext* aPresContext)
+                      flatDocCharset.get(), baseURI);
+   if (NS_FAILED(result)) return result;
+ 
+-  // Now pass on absolute url to the click handler
+-  if (handler) {
+-    handler->OnLinkClick(mContent, uri, nsnull);
+-  }
++  // Now pretend we're triggering a link
++  nsContentUtils::TriggerLink(mContent, aPresContext, uri,
++                              EmptyString(), PR_TRUE, PR_TRUE);
+   return result;
+ }
+ """
+c339757e34861b7793797f3d8ef005e117a78107,17952,616264,Dan Witte,"Fix bug 616264. r=ehsan,sdwilsh, a=beta9+
+",1293054656,"""diff --git a/content/base/src/ThirdPartyUtil.cpp b/content/base/src/ThirdPartyUtil.cpp
+index f33a2fd..d8fc6c5 100644
+--- a/content/base/src/ThirdPartyUtil.cpp
++++ b/content/base/src/ThirdPartyUtil.cpp
+@@ -59,11 +59,11 @@ ThirdPartyUtil::Init()
+ 
+ // Get the base domain for aHostURI; e.g. for """"www.bbc.co.uk"""", this would be
+ // """"bbc.co.uk"""". Only properly-formed URI's are tolerated, though a trailing
+-// dot may be present (and will be stripped). If aHostURI is an IP address,
+-// an alias such as 'localhost', an eTLD such as 'co.uk', or the empty string,
+-// aBaseDomain will be the exact host. The result of this function should only
+-// be used in exact string comparisons, since substring comparisons will not
+-// be valid for the special cases elided above.
++// dot may be present. If aHostURI is an IP address, an alias such as
++// 'localhost', an eTLD such as 'co.uk', or the empty string, aBaseDomain will
++// be the exact host. The result of this function should only be used in exact
++// string comparisons, since substring comparisons will not be valid for the
++// special cases elided above.
+ nsresult
+ ThirdPartyUtil::GetBaseDomain(nsIURI* aHostURI,
+                               nsCString& aBaseDomain)
+@@ -80,9 +80,9 @@ ThirdPartyUtil::GetBaseDomain(nsIURI* aHostURI,
+   }
+   NS_ENSURE_SUCCESS(rv, rv);
+ 
+-  // aHostURI (and thus aBaseDomain) may contain a trailing dot; if so, trim it.
+-  if (!aBaseDomain.IsEmpty() && aBaseDomain.Last() == '.')
+-    aBaseDomain.Truncate(aBaseDomain.Length() - 1);
++  // aHostURI (and thus aBaseDomain) may be the string '.'. If so, fail.
++  if (aBaseDomain.Length() == 1 && aBaseDomain.Last() == '.')
++    return NS_ERROR_INVALID_ARG;
+ 
+   // Reject any URIs without a host that aren't file:// URIs. This makes it the
+   // only way we can get a base domain consisting of the empty string, which
+diff --git a/extensions/cookie/test/unit/test_bug526789.js b/extensions/cookie/test/unit/test_bug526789.js
+index ac300a0..88aec09 100644
+--- a/extensions/cookie/test/unit/test_bug526789.js
++++ b/extensions/cookie/test/unit/test_bug526789.js
+@@ -14,8 +14,8 @@ function run_test() {
+   do_check_eq(cm.countCookiesFromHost(""""baz.com""""), 1);
+   do_check_eq(cm.countCookiesFromHost(""""BAZ.com""""), 1);
+   do_check_eq(cm.countCookiesFromHost("""".baz.com""""), 1);
+-  do_check_eq(cm.countCookiesFromHost(""""baz.com.""""), 1);
+-  do_check_eq(cm.countCookiesFromHost("""".baz.com.""""), 1);
++  do_check_eq(cm.countCookiesFromHost(""""baz.com.""""), 0);
++  do_check_eq(cm.countCookiesFromHost("""".baz.com.""""), 0);
+   do_check_throws(function() {
+     cm.countCookiesFromHost(""""baz.com.."""");
+   }, Cr.NS_ERROR_ILLEGAL_VALUE);
+@@ -26,13 +26,27 @@ function run_test() {
+     cm.countCookiesFromHost(""""..baz.com"""");
+   }, Cr.NS_ERROR_ILLEGAL_VALUE);
+   cm.remove(""""BAZ.com."""", """"foo"""", """"/"""", false);
++  do_check_eq(cm.countCookiesFromHost(""""baz.com""""), 1);
++  cm.remove(""""baz.com"""", """"foo"""", """"/"""", false);
+   do_check_eq(cm.countCookiesFromHost(""""baz.com""""), 0);
+ 
++  // Test that 'baz.com' and 'baz.com.' are treated differently
++  cm.add(""""baz.com."""", """"/"""", """"foo"""", """"bar"""", false, false, true, expiry);
++  do_check_eq(cm.countCookiesFromHost(""""baz.com""""), 0);
++  do_check_eq(cm.countCookiesFromHost(""""BAZ.com""""), 0);
++  do_check_eq(cm.countCookiesFromHost("""".baz.com""""), 0);
++  do_check_eq(cm.countCookiesFromHost(""""baz.com.""""), 1);
++  do_check_eq(cm.countCookiesFromHost("""".baz.com.""""), 1);
++  cm.remove(""""baz.com"""", """"foo"""", """"/"""", false);
++  do_check_eq(cm.countCookiesFromHost(""""baz.com.""""), 1);
++  cm.remove(""""baz.com."""", """"foo"""", """"/"""", false);
++  do_check_eq(cm.countCookiesFromHost(""""baz.com.""""), 0);
++
+   // test that domain cookies are illegal for IP addresses, aliases such as
+   // 'localhost', and eTLD's such as 'co.uk'
+   cm.add(""""192.168.0.1"""", """"/"""", """"foo"""", """"bar"""", false, false, true, expiry);
+   do_check_eq(cm.countCookiesFromHost(""""192.168.0.1""""), 1);
+-  do_check_eq(cm.countCookiesFromHost(""""192.168.0.1.""""), 1);
++  do_check_eq(cm.countCookiesFromHost(""""192.168.0.1.""""), 0);
+   do_check_throws(function() {
+     cm.countCookiesFromHost("""".192.168.0.1"""");
+   }, Cr.NS_ERROR_ILLEGAL_VALUE);
+@@ -42,7 +56,7 @@ function run_test() {
+ 
+   cm.add(""""localhost"""", """"/"""", """"foo"""", """"bar"""", false, false, true, expiry);
+   do_check_eq(cm.countCookiesFromHost(""""localhost""""), 1);
+-  do_check_eq(cm.countCookiesFromHost(""""localhost.""""), 1);
++  do_check_eq(cm.countCookiesFromHost(""""localhost.""""), 0);
+   do_check_throws(function() {
+     cm.countCookiesFromHost("""".localhost"""");
+   }, Cr.NS_ERROR_ILLEGAL_VALUE);
+@@ -52,7 +66,7 @@ function run_test() {
+ 
+   cm.add(""""co.uk"""", """"/"""", """"foo"""", """"bar"""", false, false, true, expiry);
+   do_check_eq(cm.countCookiesFromHost(""""co.uk""""), 1);
+-  do_check_eq(cm.countCookiesFromHost(""""co.uk.""""), 1);
++  do_check_eq(cm.countCookiesFromHost(""""co.uk.""""), 0);
+   do_check_throws(function() {
+     cm.countCookiesFromHost("""".co.uk"""");
+   }, Cr.NS_ERROR_ILLEGAL_VALUE);
+@@ -122,14 +136,14 @@ function run_test() {
+   cs.setCookieString(emptyuri, null, """"foo3=bar; domain="""", null);
+   do_check_eq(getCookieCount(), 2);
+   cs.setCookieString(emptyuri, null, """"foo4=bar; domain=."""", null);
+-  do_check_eq(getCookieCount(), 3);
++  do_check_eq(getCookieCount(), 2);
+   cs.setCookieString(emptyuri, null, """"foo5=bar; domain=bar.com"""", null);
+-  do_check_eq(getCookieCount(), 3);
++  do_check_eq(getCookieCount(), 2);
+ 
+-  do_check_eq(cs.getCookieString(emptyuri, null), """"foo2=bar; foo3=bar; foo4=bar"""");
++  do_check_eq(cs.getCookieString(emptyuri, null), """"foo2=bar; foo3=bar"""");
+ 
+   do_check_eq(cm.countCookiesFromHost(""""baz.com""""), 0);
+-  do_check_eq(cm.countCookiesFromHost(""""""""), 3);
++  do_check_eq(cm.countCookiesFromHost(""""""""), 2);
+   do_check_throws(function() {
+     cm.countCookiesFromHost(""""."""");
+   }, Cr.NS_ERROR_ILLEGAL_VALUE);
+@@ -141,8 +155,6 @@ function run_test() {
+   e.getNext();
+   do_check_true(e.hasMoreElements());
+   e.getNext();
+-  do_check_true(e.hasMoreElements());
+-  e.getNext();
+   do_check_false(e.hasMoreElements());
+   do_check_throws(function() {
+     cm.getCookiesFromHost(""""."""");
+@@ -166,12 +178,17 @@ function run_test() {
+   }, Cr.NS_ERROR_ILLEGAL_VALUE);
+ 
+   // test that the 'domain' attribute accepts a leading dot for IP addresses,
+-  // aliases such as 'localhost', eTLD's such as 'co.uk', and the empty host;
+-  // but that the resulting cookie is for the exact host only.
++  // aliases such as 'localhost', and eTLD's such as 'co.uk'; but that the
++  // resulting cookie is for the exact host only.
+   testDomainCookie(""""http://192.168.0.1/"""", """"192.168.0.1"""");
+   testDomainCookie(""""http://localhost/"""", """"localhost"""");
+   testDomainCookie(""""http://co.uk/"""", """"co.uk"""");
+-  testDomainCookie(""""file:///"""", """""""");
++
++  // Test that trailing dots are treated differently for purposes of the
++  // 'domain' attribute when using setCookieString.
++  testTrailingDotCookie(""""http://192.168.0.1"""", """"192.168.0.1"""");
++  testTrailingDotCookie(""""http://localhost"""", """"localhost"""");
++  testTrailingDotCookie(""""http://foo.com"""", """"foo.com"""");
+ 
+   cm.removeAll();
+ }
+@@ -208,3 +225,22 @@ function testDomainCookie(uriString, domain) {
+   cm.removeAll();
+ }
+ 
++function testTrailingDotCookie(uriString, domain) {
++  var cs = Cc[""""@mozilla.org/cookieService;1""""].getService(Ci.nsICookieService);
++  var cm = Cc[""""@mozilla.org/cookiemanager;1""""].getService(Ci.nsICookieManager2);
++
++  cm.removeAll();
++
++  var uri = NetUtil.newURI(uriString);
++  cs.setCookieString(uri, null, """"foo=bar; domain="""" + domain + """"."""", null);
++  do_check_eq(cm.countCookiesFromHost(domain), 0);
++  do_check_eq(cm.countCookiesFromHost(domain + """".""""), 0);
++  cm.removeAll();
++
++  uri = NetUtil.newURI(uriString + """"."""");
++  cs.setCookieString(uri, null, """"foo=bar; domain="""" + domain, null);
++  do_check_eq(cm.countCookiesFromHost(domain), 0);
++  do_check_eq(cm.countCookiesFromHost(domain + """".""""), 0);
++  cm.removeAll();
++}
++
+diff --git a/netwerk/cookie/nsCookieService.cpp b/netwerk/cookie/nsCookieService.cpp
+index a5dc124..6931fba 100644
+--- a/netwerk/cookie/nsCookieService.cpp
++++ b/netwerk/cookie/nsCookieService.cpp
+@@ -1512,7 +1512,7 @@ nsCookieService::SetCookieStringInternal(nsIURI          *aHostURI,
+   // e.g. for """"www.bbc.co.uk"""", this would be """"bbc.co.uk"""".
+   // file:// URI's (i.e. with an empty host) are allowed, but any other
+   // scheme must have a non-empty host. A trailing dot in the host
+-  // is acceptable, and will be stripped.
++  // is acceptable.
+   PRBool requireHostMatch;
+   nsCAutoString baseDomain;
+   nsresult rv = GetBaseDomain(aHostURI, baseDomain, requireHostMatch);
+@@ -2344,7 +2344,7 @@ nsCookieService::GetCookieStringInternal(nsIURI *aHostURI,
+   // e.g. for """"www.bbc.co.uk"""", the base domain would be """"bbc.co.uk"""".
+   // file:// URI's (i.e. with an empty host) are allowed, but any other
+   // scheme must have a non-empty host. A trailing dot in the host
+-  // is acceptable, and will be stripped.
++  // is acceptable.
+   PRBool requireHostMatch;
+   nsCAutoString baseDomain, hostFromURI, pathFromURI;
+   nsresult rv = GetBaseDomain(aHostURI, baseDomain, requireHostMatch);
+@@ -2352,9 +2352,6 @@ nsCookieService::GetCookieStringInternal(nsIURI *aHostURI,
+     rv = aHostURI->GetAsciiHost(hostFromURI);
+   if (NS_SUCCEEDED(rv))
+     rv = aHostURI->GetPath(pathFromURI);
+-  // trim any trailing dot
+-  if (!hostFromURI.IsEmpty() && hostFromURI.Last() == '.')
+-    hostFromURI.Truncate(hostFromURI.Length() - 1);
+   if (NS_FAILED(rv)) {
+     COOKIE_LOGFAILURE(GET_COOKIE, aHostURI, nsnull, """"invalid host/path from URI"""");
+     return;
+@@ -2973,10 +2970,10 @@ nsCookieService::ParseAttributes(nsDependentCString &aCookieHeader,
+ 
+ // Get the base domain for aHostURI; e.g. for """"www.bbc.co.uk"""", this would be
+ // """"bbc.co.uk"""". Only properly-formed URI's are tolerated, though a trailing
+-// dot may be present (and will be stripped). If aHostURI is an IP address,
+-// an alias such as 'localhost', an eTLD such as 'co.uk', or the empty string,
+-// aBaseDomain will be the exact host, and aRequireHostMatch will be true to
+-// indicate that substring matches should not be performed.
++// dot may be present. If aHostURI is an IP address, an alias such as
++// 'localhost', an eTLD such as 'co.uk', or the empty string, aBaseDomain will
++// be the exact host, and aRequireHostMatch will be true to indicate that
++// substring matches should not be performed.
+ nsresult
+ nsCookieService::GetBaseDomain(nsIURI    *aHostURI,
+                                nsCString &aBaseDomain,
+@@ -2995,9 +2992,9 @@ nsCookieService::GetBaseDomain(nsIURI    *aHostURI,
+   }
+   NS_ENSURE_SUCCESS(rv, rv);
+ 
+-  // aHost (and thus aBaseDomain) may contain a trailing dot; if so, trim it.
+-  if (!aBaseDomain.IsEmpty() && aBaseDomain.Last() == '.')
+-    aBaseDomain.Truncate(aBaseDomain.Length() - 1);
++  // aHost (and thus aBaseDomain) may be the string '.'. If so, fail.
++  if (aBaseDomain.Length() == 1 && aBaseDomain.Last() == '.')
++    return NS_ERROR_INVALID_ARG;
+ 
+   // block any URIs without a host that aren't file:// URIs.
+   if (aBaseDomain.IsEmpty()) {
+@@ -3013,7 +3010,7 @@ nsCookieService::GetBaseDomain(nsIURI    *aHostURI,
+ // Get the base domain for aHost; e.g. for """"www.bbc.co.uk"""", this would be
+ // """"bbc.co.uk"""". This is done differently than GetBaseDomain(): it is assumed
+ // that aHost is already normalized, and it may contain a leading dot
+-// (indicating that it represents a domain). A trailing dot must not be present.
++// (indicating that it represents a domain). A trailing dot may be present.
+ // If aHost is an IP address, an alias such as 'localhost', an eTLD such as
+ // 'co.uk', or the empty string, aBaseDomain will be the exact host, and a
+ // leading dot will be treated as an error.
+@@ -3021,8 +3018,8 @@ nsresult
+ nsCookieService::GetBaseDomainFromHost(const nsACString &aHost,
+                                        nsCString        &aBaseDomain)
+ {
+-  // aHost must not contain a trailing dot, or be the string '.'.
+-  if (!aHost.IsEmpty() && aHost.Last() == '.')
++  // aHost must not be the string '.'.
++  if (aHost.Length() == 1 && aHost.Last() == '.')
+     return NS_ERROR_INVALID_ARG;
+ 
+   // aHost may contain a leading dot; if so, strip it now.
+@@ -3051,7 +3048,7 @@ nsCookieService::GetBaseDomainFromHost(const nsACString &aHost,
+ 
+ // Normalizes the given hostname, component by component. ASCII/ACE
+ // components are lower-cased, and UTF-8 components are normalized per
+-// RFC 3454 and converted to ACE. Any trailing dot is stripped.
++// RFC 3454 and converted to ACE.
+ nsresult
+ nsCookieService::NormalizeHost(nsCString &aHost)
+ {
+@@ -3064,17 +3061,12 @@ nsCookieService::NormalizeHost(nsCString &aHost)
+     aHost = host;
+   }
+ 
+-  // Only strip the trailing dot if it wouldn't result in the empty string;
+-  // in that case, treat it like a leading dot.
+-  if (aHost.Length() > 1 && aHost.Last() == '.')
+-    aHost.Truncate(aHost.Length() - 1);
+-
+   ToLowerCase(aHost);
+   return NS_OK;
+ }
+ 
+ // returns PR_TRUE if 'a' is equal to or a subdomain of 'b',
+-// assuming no leading or trailing dots are present.
++// assuming no leading dots are present.
+ static inline PRBool IsSubdomainOf(const nsCString &a, const nsCString &b)
+ {
+   if (a == b)
+@@ -3158,15 +3150,13 @@ nsCookieService::CheckDomain(nsCookieAttributes &aCookieAttributes,
+   nsCAutoString hostFromURI;
+   aHostURI->GetAsciiHost(hostFromURI);
+ 
+-  // trim any trailing dot
+-  if (!hostFromURI.IsEmpty() && hostFromURI.Last() == '.')
+-    hostFromURI.Truncate(hostFromURI.Length() - 1);
+-
+   // if a domain is given, check the host has permission
+   if (!aCookieAttributes.host.IsEmpty()) {
+-    // Tolerate leading '.' characters.
+-    if (aCookieAttributes.host.First() == '.')
++    // Tolerate leading '.' characters, but not if it's otherwise an empty host.
++    if (aCookieAttributes.host.Length() > 1 &&
++        aCookieAttributes.host.First() == '.') {
+       aCookieAttributes.host.Cut(0, 1);
++    }
+ 
+     // switch to lowercase now, to avoid case-insensitive compares everywhere
+     ToLowerCase(aCookieAttributes.host);
+diff --git a/netwerk/test/TestCookie.cpp b/netwerk/test/TestCookie.cpp
+index b51a876..c719000 100644
+--- a/netwerk/test/TestCookie.cpp
++++ b/netwerk/test/TestCookie.cpp
+@@ -309,11 +309,11 @@ main(PRInt32 argc, char *argv[])
+       GetACookie(cookieService, """"http://www.basic.com/testPath/testfile.txt"""", nsnull, getter_Copies(cookie));
+       rv[1] = CheckResult(cookie.get(), MUST_EQUAL, """"test=basic"""");
+       GetACookie(cookieService, """"http://www.basic.com./"""", nsnull, getter_Copies(cookie));
+-      rv[2] = CheckResult(cookie.get(), MUST_EQUAL, """"test=basic"""");
++      rv[2] = CheckResult(cookie.get(), MUST_BE_NULL);
+       GetACookie(cookieService, """"http://www.basic.com."""", nsnull, getter_Copies(cookie));
+-      rv[3] = CheckResult(cookie.get(), MUST_EQUAL, """"test=basic"""");
++      rv[3] = CheckResult(cookie.get(), MUST_BE_NULL);
+       GetACookie(cookieService, """"http://www.basic.com./testPath/testfile.txt"""", nsnull, getter_Copies(cookie));
+-      rv[4] = CheckResult(cookie.get(), MUST_EQUAL, """"test=basic"""");
++      rv[4] = CheckResult(cookie.get(), MUST_BE_NULL);
+       GetACookie(cookieService, """"http://www.basic2.com/"""", nsnull, getter_Copies(cookie));
+       rv[5] = CheckResult(cookie.get(), MUST_BE_NULL);
+       SetACookie(cookieService, """"http://www.basic.com"""", nsnull, """"test=basic; max-age=-1"""", nsnull);
+@@ -332,7 +332,7 @@ main(PRInt32 argc, char *argv[])
+       GetACookie(cookieService, """"http://domain.com"""", nsnull, getter_Copies(cookie));
+       rv[0] = CheckResult(cookie.get(), MUST_EQUAL, """"test=domain"""");
+       GetACookie(cookieService, """"http://domain.com."""", nsnull, getter_Copies(cookie));
+-      rv[1] = CheckResult(cookie.get(), MUST_EQUAL, """"test=domain"""");
++      rv[1] = CheckResult(cookie.get(), MUST_BE_NULL);
+       GetACookie(cookieService, """"http://www.domain.com"""", nsnull, getter_Copies(cookie));
+       rv[2] = CheckResult(cookie.get(), MUST_EQUAL, """"test=domain"""");
+       GetACookie(cookieService, """"http://foo.domain.com"""", nsnull, getter_Copies(cookie));"""
+8de6eeccdcb14d2432626e4393365ad8586fd6c0,25367,607160,Jonathan Kew,"bug 607160 - check text length computations. r=roc a=blocking2.0
+",1290699413,"""diff --git a/layout/generic/nsTextFrameThebes.cpp b/layout/generic/nsTextFrameThebes.cpp
+index 849ab14..26f3c88 100644
+--- a/layout/generic/nsTextFrameThebes.cpp
++++ b/layout/generic/nsTextFrameThebes.cpp
+@@ -866,6 +866,7 @@ private:
+   // on the line, or null if there was no previous leaf frame.
+   nsIFrame*                     mCommonAncestorWithLastFrame;
+   // mMaxTextLength is an upper bound on the size of the text in all mapped frames
++  // The value PR_UINT32_MAX represents overflow; text will be discarded
+   PRUint32                      mMaxTextLength;
+   PRPackedBool                  mDoubleByteText;
+   PRPackedBool                  mBidiEnabled;
+@@ -1294,8 +1295,11 @@ void BuildTextRunsScanner::FlushFrames(PRBool aFlushLineBreaks, PRBool aSuppress
+       }
+     } else {
+       nsAutoTArray<PRUint8,BIG_TEXT_NODE_SIZE> buffer;
+-      if (!buffer.AppendElements(mMaxTextLength*(mDoubleByteText ? 2 : 1)))
++      PRUint32 bufferSize = mMaxTextLength*(mDoubleByteText ? 2 : 1);
++      if (bufferSize < mMaxTextLength || bufferSize == PR_UINT32_MAX ||
++          !buffer.AppendElements(bufferSize)) {
+         return;
++      }
+       textRun = BuildTextRunForFrames(buffer.Elements());
+     }
+   }
+@@ -1339,8 +1343,14 @@ void BuildTextRunsScanner::FlushLineBreaks(gfxTextRun* aTrailingTextRun)
+ 
+ void BuildTextRunsScanner::AccumulateRunInfo(nsTextFrame* aFrame)
+ {
+-  NS_ASSERTION(mMaxTextLength <= mMaxTextLength + aFrame->GetContentLength(), """"integer overflow"""");
+-  mMaxTextLength += aFrame->GetContentLength();
++  if (mMaxTextLength != PR_UINT32_MAX) {
++    NS_ASSERTION(mMaxTextLength < PR_UINT32_MAX - aFrame->GetContentLength(), """"integer overflow"""");
++    if (mMaxTextLength >= PR_UINT32_MAX - aFrame->GetContentLength()) {
++      mMaxTextLength = PR_UINT32_MAX;
++    } else {
++      mMaxTextLength += aFrame->GetContentLength();
++    }
++  }
+   mDoubleByteText |= aFrame->GetContent()->GetText()->Is2b();
+   mLastFrame = aFrame;
+   mCommonAncestorWithLastFrame = aFrame->GetParent();"""
+af45effeb97cb18ba9b48cc4323d29bd7e0b761f,30169,610601,Mats Palmgren,"Bug 610601 - re-use the frame only if there is image data.  r+a=joe
+",1291774852,"""diff --git a/modules/libpr0n/src/RasterImage.cpp b/modules/libpr0n/src/RasterImage.cpp
+index e3df617..3999ce8 100644
+--- a/modules/libpr0n/src/RasterImage.cpp
++++ b/modules/libpr0n/src/RasterImage.cpp
+@@ -918,22 +918,22 @@ RasterImage::EnsureCleanFrame(PRUint32 aFrameNum, PRInt32 aX, PRInt32 aY,
+ 
+   // See if we can re-use the frame that already exists.
+   nsIntRect rect = frame->GetRect();
+-  if (rect.x != aX || rect.y != aY || rect.width != aWidth || rect.height != aHeight ||
+-      frame->GetFormat() != aFormat) {
+-    DeleteImgFrame(aFrameNum);
+-    return InternalAddFrame(aFrameNum, aX, aY, aWidth, aHeight, aFormat, 
+-                            /* aPaletteDepth = */ 0, imageData, imageLength,
+-                            /* aPaletteData = */ nsnull, 
+-                            /* aPaletteLength = */ nsnull);
++  if (rect.x == aX && rect.y == aY && rect.width == aWidth &&
++      rect.height == aHeight && frame->GetFormat() == aFormat) {
++    // We can re-use the frame if it has image data.
++    frame->GetImageData(imageData, imageLength);
++    if (*imageData) {
++      return NS_OK;
++    }
+   }
+ 
+-  // We can re-use the frame.
+-  frame->GetImageData(imageData, imageLength);
+-
+-  return NS_OK;
++  DeleteImgFrame(aFrameNum);
++  return InternalAddFrame(aFrameNum, aX, aY, aWidth, aHeight, aFormat, 
++                          /* aPaletteDepth = */ 0, imageData, imageLength,
++                          /* aPaletteData = */ nsnull, 
++                          /* aPaletteLength = */ nsnull);
+ }
+ 
+-
+ void
+ RasterImage::FrameUpdated(PRUint32 aFrameNum, nsIntRect &aUpdatedRect)
+ {"""

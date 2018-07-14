@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper.CodeImportMapper">
+  <resultMap id="BaseResultMap" type="po.CodeImport">
+    <result column="code_import_id" jdbcType="INTEGER" property="codeImportId" />
+    <result column="import_package" jdbcType="VARCHAR" property="importPackage" />
+    <result column="import_class" jdbcType="VARCHAR" property="importClass" />
+    <result column="import_type" jdbcType="VARCHAR" property="importType" />
+    <result column="inner_class" jdbcType="INTEGER" property="innerClass" />
+    <result column="api" jdbcType="INTEGER" property="api" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    code_import_id, import_package, import_class, import_type, inner_class, api
+  </sql>
+  <select id="selectByExample" parameterType="po.CodeImportExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from code_import
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <delete id="deleteByExample" parameterType="po.CodeImportExample">
+    delete from code_import
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="po.CodeImport">
+    insert into code_import (code_import_id, import_package, import_class, 
+      import_type, inner_class, api
+      )
+    values (#{codeImportId,jdbcType=INTEGER}, #{importPackage,jdbcType=VARCHAR}, #{importClass,jdbcType=VARCHAR}, 
+      #{importType,jdbcType=VARCHAR}, #{innerClass,jdbcType=INTEGER}, #{api,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="po.CodeImport">
+    insert into code_import
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="codeImportId != null">
+        code_import_id,
+      </if>
+      <if test="importPackage != null">
+        import_package,
+      </if>
+      <if test="importClass != null">
+        import_class,
+      </if>
+      <if test="importType != null">
+        import_type,
+      </if>
+      <if test="innerClass != null">
+        inner_class,
+      </if>
+      <if test="api != null">
+        api,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="codeImportId != null">
+        #{codeImportId,jdbcType=INTEGER},
+      </if>
+      <if test="importPackage != null">
+        #{importPackage,jdbcType=VARCHAR},
+      </if>
+      <if test="importClass != null">
+        #{importClass,jdbcType=VARCHAR},
+      </if>
+      <if test="importType != null">
+        #{importType,jdbcType=VARCHAR},
+      </if>
+      <if test="innerClass != null">
+        #{innerClass,jdbcType=INTEGER},
+      </if>
+      <if test="api != null">
+        #{api,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="po.CodeImportExample" resultType="java.lang.Long">
+    select count(*) from code_import
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update code_import
+    <set>
+      <if test="record.codeImportId != null">
+        code_import_id = #{record.codeImportId,jdbcType=INTEGER},
+      </if>
+      <if test="record.importPackage != null">
+        import_package = #{record.importPackage,jdbcType=VARCHAR},
+      </if>
+      <if test="record.importClass != null">
+        import_class = #{record.importClass,jdbcType=VARCHAR},
+      </if>
+      <if test="record.importType != null">
+        import_type = #{record.importType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.innerClass != null">
+        inner_class = #{record.innerClass,jdbcType=INTEGER},
+      </if>
+      <if test="record.api != null">
+        api = #{record.api,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update code_import
+    set code_import_id = #{record.codeImportId,jdbcType=INTEGER},
+      import_package = #{record.importPackage,jdbcType=VARCHAR},
+      import_class = #{record.importClass,jdbcType=VARCHAR},
+      import_type = #{record.importType,jdbcType=VARCHAR},
+      inner_class = #{record.innerClass,jdbcType=INTEGER},
+      api = #{record.api,jdbcType=INTEGER}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+</mapper>
