@@ -14,5 +14,5 @@ This Project is a collection of my code using in my research. The name of the fo
 - **SEDataExtractor-master** is a project to do some analysis work about the repositories including structure analysis, commit extraction, etc.
 
 ## SecurityBug
-- **crawler** is a project to crawl information ,including bug history, comments and commits, from bugzilla and github.
+- **crawler** is a project to crawl information, including bug history, comments and commits, from bugzilla and github.
 - **data** is a data statistic file.
