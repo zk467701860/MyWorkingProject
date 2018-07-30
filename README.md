@@ -10,9 +10,9 @@ This Project is a collection of my code using in my research. The name of the fo
 - **SKnowledgeGraph-master** is a project to complete the knowledge graph including database operation, entity linking, server that provide graph service, etc.
 
 ## BigCode
-- **crawler-master** is a project to crawl repositories,releases and information from github.
+- **Crawler-master** is a project to crawl repositories,releases and information from github.
 - **SEDataExtractor-master** is a project to do some analysis work about the repositories including structure analysis, commit extraction, etc.
 
 ## SecurityBug
-- **crawler** is a project to crawl information, including bug history, comments and commits, from bugzilla and github.
-- **data** is a data statistic file.
+- **Crawler** is a project to crawl information, including bug history, comments and commits, from bugzilla and github.
+- **Data** is a data statistic file.
